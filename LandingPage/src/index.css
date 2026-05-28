@@ -439,3 +439,27 @@ button {
   }
 }
 
+/* Roadmap Input Form Styling */
+.roadmap-text-input {
+  background: none !important;
+  border: none !important;
+  border-bottom: 2px dashed #78716c !important;
+  padding: 6px 0 !important;
+  font-family: var(--font-typewriter) !important;
+  font-size: 13px !important;
+  color: #292524 !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  width: 100% !important;
+}
+
+.roadmap-text-input:focus {
+  border-bottom-color: #D94747 !important;
+}
+
+.light-theme .roadmap-text-input {
+  color: #1c1917 !important;
+  border-bottom-color: #78716c !important;
+}
+
+

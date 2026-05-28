@@ -146,7 +146,7 @@ const Roadmap = () => {
                     value={driverName}
                     onChange={(e) => setDriverName(e.target.value)}
                     placeholder="Ej. 'Severo El Rápido'"
-                    style={styles.textInput}
+                    className="roadmap-text-input"
                   />
                 </div>
 
@@ -159,7 +159,7 @@ const Roadmap = () => {
                     onChange={(e) => setDriverEmail(e.target.value)}
                     onFocus={() => soundManager.playMicClick()}
                     placeholder="Ej. severo@microsrebeldes.bo"
-                    style={styles.textInput}
+                    className="roadmap-text-input"
                   />
                 </div>
               </div>
@@ -387,20 +387,6 @@ const styles = {
     fontSize: '10px',
     fontWeight: 'bold',
     color: '#44403c',
-  },
-  textInput: {
-    background: 'none',
-    border: 'none',
-    borderBottom: '2px dashed #78716c',
-    padding: '6px 0',
-    fontFamily: 'var(--font-typewriter)',
-    fontSize: '13px',
-    color: '#292524',
-    outline: 'none',
-    transition: 'all 0.2s ease',
-    ':focus': {
-      borderBottomColor: '#D94747',
-    },
   },
   stampButtonContainer: {
     display: 'flex',
