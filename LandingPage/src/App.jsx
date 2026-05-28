@@ -6,6 +6,7 @@ import LoreTable from './components/LoreTable';
 import UnderTheHood from './components/UnderTheHood';
 import CharacterGallery from './components/CharacterGallery';
 import Roadmap from './components/Roadmap';
+import Builder3D from './components/Builder3D';
 import soundManager from './utils/soundManager';
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
   // Track active section on scroll to update the illuminated menu route signs
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['inicio', 'historia', 'proceso', 'galeria', 'roadmap'];
+      const sections = ['inicio', 'historia', 'proceso', 'galeria', 'roadmap', 'taller3d'];
       const scrollPosition = window.scrollY + window.innerHeight / 3;
 
       for (const sectionId of sections) {
@@ -185,6 +186,7 @@ function App() {
       <UnderTheHood />
       <CharacterGallery />
       <Roadmap />
+      <Builder3D />
 
       {/* CLANDESTINE FOOTER */}
       <footer style={styles.footer}>

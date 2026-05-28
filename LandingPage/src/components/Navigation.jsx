@@ -7,6 +7,7 @@ const Navigation = ({ activeSection }) => {
     { id: 'proceso', title: 'BAJO EL CAPÓ', routes: 'SOPOCACHI - PRADO - MIRAFLORES', color: 'var(--neon-chicha)' },
     { id: 'galeria', title: 'GARAJE MECHA', routes: 'GARAJE - SAN PEDRO - ACHUMANI', color: 'var(--neon-red)' },
     { id: 'roadmap', title: 'HOJA DE RUTA', routes: 'CONTROL - PEAJE - V. FÁTIMA', color: 'var(--neon-yellow)' },
+    { id: 'taller3d', title: '3D BUILDER', routes: 'ENSAMBLAJE - 3D - RENDER', color: 'var(--neon-purple)' },
   ];
 
   const handleScroll = (id) => {
@@ -25,7 +26,7 @@ const Navigation = ({ activeSection }) => {
     <div style={styles.navContainer}>
       <div style={styles.navInner}>
         <div style={styles.workshopTitle}>
-          <span style={{ color: 'var(--neon-red)', textShadow: '0 0 10px rgba(255,0,60,0.5)' }}>[ TALLER CLANDESTINO ]</span>
+          <span style={{ color: 'var(--neon-red)', textShadow: '0 0 10px rgba(255,0,60,0.5)', whiteSpace: 'nowrap' }}>[ TALLER CLANDESTINO ]</span>
           <span style={styles.hudTerminal}>SISTEMA DE RUTAS v1.0.8</span>
         </div>
 
@@ -135,7 +136,7 @@ const styles = {
     padding: '4px 14px 4px 6px',
     textAlign: 'left',
     transition: 'all 0.25s ease',
-    minWidth: '180px',
+    minWidth: '145px',
     overflow: 'hidden',
   },
   stripeBar: {
@@ -175,7 +176,7 @@ const styles = {
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    maxWidth: '155px',
+    maxWidth: '120px',
     transition: 'color 0.25s ease',
   },
   statusDot: {
