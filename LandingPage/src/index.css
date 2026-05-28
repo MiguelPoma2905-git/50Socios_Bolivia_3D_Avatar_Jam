@@ -1,0 +1,441 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,700;0,900;1,400&family=Oxanium:wght@400;600;800&family=Share+Tech+Mono&family=Special+Elite&display=swap');
+
+:root {
+  /* Cyberpunk / Chicha Color Palette (Default Dark Theme: Noche Cyberpunk) */
+  --bg-deep: #05060a;
+  --bg-dark: #0a0c14;
+  --bg-card: rgba(10, 12, 20, 0.85);
+  
+  --neon-blue: #00e5ff;
+  --neon-blue-glow: rgba(0, 229, 255, 0.4);
+  --neon-green: #39ff14;
+  --neon-green-glow: rgba(57, 255, 20, 0.4);
+  --neon-red: #ff003c;
+  --neon-red-glow: rgba(255, 0, 60, 0.4);
+  --neon-yellow: #ffea00;
+  --neon-yellow-glow: rgba(255, 234, 0, 0.4);
+  --neon-chicha: #ff00ff;
+  --neon-chicha-glow: rgba(255, 0, 255, 0.4);
+  
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-dark: #0f172a;
+  
+  --border-metal: #27272a;
+  --border-glow-blue: rgba(0, 229, 255, 0.3);
+  --border-glow-green: rgba(57, 255, 20, 0.3);
+  
+  --font-title: 'Montserrat', sans-serif;
+  --font-mecha: 'Oxanium', sans-serif;
+  --font-hud: 'Share Tech Mono', monospace;
+  --font-typewriter: 'Special Elite', system-ui;
+  
+  --theme-transition: background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease, box-shadow 0.45s ease, filter 0.45s ease;
+}
+
+/* Light Theme overrides: Cold Andean Morning (Mañana Fría Paceña) */
+.light-theme {
+  --bg-deep: #d2dfec; /* Cold, pale morning sky-blue */
+  --bg-dark: #becee0; /* Deeper slate-blue */
+  --bg-card: rgba(184, 196, 210, 0.85); /* Gris adoquín + sky tone */
+  
+  --neon-blue: #2D74D6; /* Electric transport paceño blue */
+  --neon-blue-glow: rgba(45, 116, 214, 0.3);
+  --neon-green: #15803d; /* signal/route green */
+  --neon-green-glow: rgba(21, 128, 61, 0.3);
+  --neon-red: #D94747; /* Urban signal red */
+  --neon-red-glow: rgba(217, 71, 71, 0.3);
+  --neon-yellow: #F4B400; /* Traffic warning yellow */
+  --neon-yellow-glow: rgba(244, 180, 0, 0.3);
+  --neon-chicha: #C46A2D; /* Andean copper/rust orange */
+  --neon-chicha-glow: rgba(196, 106, 45, 0.3);
+  
+  --text-primary: #1c1917; /* Dark stone charcoal */
+  --text-secondary: #44403c; /* Muted dust gray */
+  --text-dark: #fcfbf7;
+  
+  --border-metal: #7a8a9e; /* Slate steel border */
+  --border-glow-blue: rgba(45, 116, 214, 0.25);
+  --border-glow-green: rgba(21, 128, 61, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  transition: background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease, box-shadow 0.45s ease;
+}
+
+html, body {
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-title);
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+  border-left: 1px solid var(--border-metal);
+}
+::-webkit-scrollbar-thumb {
+  background: #18181b;
+  border: 2px solid var(--bg-deep);
+  border-radius: 4px;
+}
+.light-theme ::-webkit-scrollbar-thumb {
+  background: #aabccf;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-blue);
+  box-shadow: 0 0 10px var(--neon-blue);
+}
+
+/* Override standard #root to allow ultra-immersive, edge-to-edge layout */
+#root {
+  width: 100%;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  border-inline: none;
+  min-height: 100vh;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-deep);
+  position: relative;
+}
+
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.18) 0px,
+    rgba(0, 0, 0, 0.18) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.1;
+}
+
+/* Glowing Neon Text Utilities */
+.neon-text-blue {
+  color: var(--neon-blue);
+  text-shadow: 0 0 5px var(--neon-blue), 0 0 15px var(--neon-blue-glow);
+}
+.neon-text-green {
+  color: var(--neon-green);
+  text-shadow: 0 0 5px var(--neon-green), 0 0 15px var(--neon-green-glow);
+}
+.neon-text-red {
+  color: var(--neon-red);
+  text-shadow: 0 0 5px var(--neon-red), 0 0 15px var(--neon-red-glow);
+}
+.neon-text-yellow {
+  color: var(--neon-yellow);
+  text-shadow: 0 0 5px var(--neon-yellow), 0 0 15px var(--neon-yellow-glow);
+}
+.neon-text-chicha {
+  color: var(--neon-chicha);
+  text-shadow: 0 0 5px var(--neon-chicha), 0 0 15px var(--neon-chicha-glow);
+}
+
+/* Heavy Metal Card Glassmorphism */
+.metal-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-metal);
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.light-theme .metal-panel {
+  box-shadow: 0 10px 30px rgba(0,229,255,0.06), inset 0 1px 0 rgba(255,255,255,0.45);
+}
+
+.metal-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+
+/* Industrial Hazard Warning Stripes */
+.warning-stripes {
+  background: repeating-linear-gradient(
+    -45deg,
+    #ffea00,
+    #ffea00 10px,
+    #000000 10px,
+    #000000 20px
+  );
+}
+
+.light-theme .warning-stripes {
+  background: repeating-linear-gradient(
+    -45deg,
+    #F4B400,
+    #F4B400 10px,
+    #44403c 10px,
+    #44403c 20px
+  );
+}
+
+/* Shaking animations */
+@keyframes shake-mild {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-1px, 1px) rotate(-0.5deg); }
+  40% { transform: translate(-1px, -1px) rotate(0.5deg); }
+  60% { transform: translate(1px, 1px) rotate(-0.5deg); }
+  80% { transform: translate(1px, -1px) rotate(0.5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes shake-intense {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-2px, -2px) rotate(-1deg); }
+  20% { transform: translate(2px, 1px) rotate(1deg); }
+  30% { transform: translate(-1px, 2px) rotate(-1.5deg); }
+  40% { transform: translate(3px, -1px) rotate(0.5deg); }
+  50% { transform: translate(-3px, 1px) rotate(-1deg); }
+  60% { transform: translate(2px, 2px) rotate(1.5deg); }
+  70% { transform: translate(-2px, -1px) rotate(-0.5deg); }
+  80% { transform: translate(1px, -2px) rotate(1deg); }
+  90% { transform: translate(-1px, 3px) rotate(-1deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.shake-hover:hover {
+  animation: shake-mild 0.4s infinite alternate;
+}
+
+.shake-active-mild {
+  animation: shake-mild 0.15s infinite;
+}
+
+.shake-active-intense {
+  animation: shake-intense 0.08s infinite;
+}
+
+/* Constant Microbus Rattle */
+@keyframes microbus-rattle {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-0.75px) rotate(0.1deg); }
+  100% { transform: translateY(0.75px) rotate(-0.1deg); }
+}
+.microbus-idle-rattle {
+  animation: microbus-rattle 0.12s infinite alternate ease-in-out;
+}
+
+/* Glowing Pulse */
+@keyframes neon-pulse {
+  0%, 100% { opacity: 0.8; box-shadow: 0 0 10px var(--neon-blue-glow); }
+  50% { opacity: 1; box-shadow: 0 0 25px var(--neon-blue), 0 0 10px var(--neon-blue-glow); }
+}
+.pulse-blue {
+  animation: neon-pulse 2s infinite ease-in-out;
+}
+
+@keyframes neon-pulse-green {
+  0%, 100% { opacity: 0.8; box-shadow: 0 0 10px var(--neon-green-glow); }
+  50% { opacity: 1; box-shadow: 0 0 25px var(--neon-green), 0 0 10px var(--neon-green-glow); }
+}
+.pulse-green {
+  animation: neon-pulse-green 1.8s infinite ease-in-out;
+}
+
+/* Neon flicker keyframes */
+@keyframes neon-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+  20%, 24%, 55% {
+    opacity: 0.3;
+    filter: none;
+  }
+}
+.neon-flicker-anim {
+  animation: neon-flicker 4s infinite alternate;
+}
+
+/* Custom Gritty / Grunge Textures */
+.grunge-texture {
+  background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 0),
+                    radial-gradient(rgba(255,255,255,0.02) 2px, transparent 0);
+  background-size: 24px 24px, 48px 48px;
+}
+
+.light-theme .grunge-texture {
+  background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 0),
+                    radial-gradient(rgba(0,0,0,0.02) 2px, transparent 0);
+}
+
+.oil-slick {
+  background: linear-gradient(135deg, 
+    rgba(45,116,214,0.05) 0%,
+    rgba(196,106,45,0.05) 30%,
+    rgba(27,154,46,0.05) 60%,
+    transparent 100%
+  );
+}
+
+/* DRIFTING CLOUDS FOR LIGHT THEME (Cold La Paz Morning) */
+.clouds-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.light-theme .clouds-container {
+  opacity: 0.85; /* Fluffy multi-layered morning clouds */
+}
+
+@keyframes drift {
+  0% { transform: translate3d(-120%, 0, 0); }
+  100% { transform: translate3d(120vw, 0, 0); }
+}
+
+.cloud-layer {
+  position: absolute;
+  fill: rgba(255, 255, 255, 0.45);
+  filter: blur(12px); /* High clouds */
+  pointer-events: none;
+}
+
+/* Low-lying dense fog bands */
+.fog-layer {
+  position: absolute;
+  fill: rgba(255, 255, 255, 0.35);
+  filter: blur(25px); /* Massive, soft fog edges */
+  pointer-events: none;
+}
+
+.cloud-layer-very-slow {
+  animation: drift 200s linear infinite;
+}
+
+.cloud-layer-slow {
+  animation: drift 150s linear infinite;
+}
+
+.cloud-layer-medium {
+  animation: drift 100s linear infinite;
+}
+
+.cloud-layer-fast {
+  animation: drift 65s linear infinite;
+}
+
+/* THICK NEBLINA / FOG OVERLAY (Freezing mountain mist) */
+.neblina-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 45%;
+  background: linear-gradient(to top, var(--bg-deep) 0%, rgba(210, 223, 236, 0.4) 60%, transparent 100%);
+  pointer-events: none;
+  z-index: 3; /* Overlays backgrounds, behind interactive items */
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.light-theme .neblina-overlay {
+  opacity: 0.88; /* Freezing morning mist rolls in at bottom */
+}
+
+/* Buttons and Links */
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+/* Scrollytelling visual transitions */
+.scene-transition {
+  transition: background 1.5s ease, box-shadow 1.5s ease, filter 1.5s ease;
+}
+
+/* Custom cursor style */
+.cyber-cursor {
+  cursor: crosshair;
+}
+
+/* Responsive utility classes for React components (eliminating browser console inline media query warnings) */
+@media (max-width: 1200px) {
+  .cg-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-content-container {
+    grid-template-columns: 1fr !important;
+    margin-top: 40px !important;
+  }
+  .uth-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 800px) {
+  .blueprint-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-pedal-area {
+    right: 20px !important;
+    left: 20px !important;
+    bottom: 10px !important;
+    max-width: calc(100% - 40px) !important;
+  }
+  .app-dashboard-card {
+    top: auto !important;
+    bottom: 90px !important;
+    right: 20px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .roadmap-form-row {
+    grid-template-columns: 1fr !important;
+  }
+  .news-columns {
+    grid-template-columns: 1fr !important;
+  }
+  .app-warning-line {
+    display: none !important;
+  }
+  .app-footer-right {
+    text-align: left !important;
+  }
+}
+
