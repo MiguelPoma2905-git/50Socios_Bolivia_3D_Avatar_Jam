@@ -5,13 +5,15 @@ import HeroSection from './components/HeroSection';
 import LoreTable from './components/LoreTable';
 import UnderTheHood from './components/UnderTheHood';
 import CharacterGallery from './components/CharacterGallery';
-import Roadmap from './components/Roadmap';
+
+import CyberSpeaker from './components/CyberSpeaker';
 import soundManager from './utils/soundManager';
 
 function App() {
   const [activeSection, setActiveSection] = useState('inicio');
   const [isMuted, setIsMuted] = useState(true);
   const [theme, setTheme] = useState('dark'); // 'dark' (Noche Cyberpunk) or 'light' (Mañana Fría Paceña)
+  const [isRaining, setIsRaining] = useState(true);
 
   // Sync theme with document.body to cascade CSS variables correctly
   useEffect(() => {
@@ -21,7 +23,7 @@ function App() {
   // Track active section on scroll to update the illuminated menu route signs
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['inicio', 'historia', 'proceso', 'galeria', 'roadmap'];
+      const sections = ['inicio', 'historia', 'proceso', 'galeria', 'speaker'];
       const scrollPosition = window.scrollY + window.innerHeight / 3;
 
       for (const sectionId of sections) {
@@ -55,6 +57,11 @@ function App() {
     soundManager.playTapeClick();
     soundManager.playMetalClank(0.3);
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
+  const handleToggleRain = () => {
+    soundManager.playTapeClick();
+    setIsRaining(!isRaining);
   };
 
   return (
@@ -94,7 +101,7 @@ function App() {
       <div className="scanlines" />
 
       {/* Real-time canvas reflective rain drops */}
-      <RainCanvas />
+      {isRaining && <RainCanvas />}
 
       {/* Floating Bolivian Route Placards menu */}
       <Navigation activeSection={activeSection} />
@@ -177,6 +184,45 @@ function App() {
           </button>
         </div>
 
+        {/* Vertical divider */}
+        <div style={styles.switchDivider} />
+
+        {/* SWITCH 3: PRECIPITATION / RAIN */}
+        <div style={styles.dashboardSwitchGroup}>
+          <div style={styles.labelGroup}>
+            <span style={styles.plateTitle}>PRECIPITACIÓN</span>
+            <span style={{ 
+              ...styles.statusText,
+              color: isRaining ? 'var(--neon-blue)' : 'var(--neon-red)',
+              textShadow: isRaining ? '0 0 8px var(--neon-blue-glow)' : '0 0 8px var(--neon-red-glow)'
+            }}>
+              {isRaining ? 'LLUVIA ACTIVA' : 'DESPEJADO'}
+            </span>
+          </div>
+          
+          <button
+            onClick={handleToggleRain}
+            className="shake-hover"
+            style={{
+              ...styles.toggleSwitch,
+              borderColor: isRaining ? 'var(--neon-blue)' : 'var(--neon-red)',
+              background: isRaining ? 'rgba(0,229,255,0.08)' : 'rgba(217,71,71,0.08)',
+            }}
+          >
+            <div style={{
+              ...styles.switchLever,
+              transform: isRaining ? 'translateY(6px) rotate(15deg)' : 'translateY(-6px) rotate(-15deg)',
+              backgroundColor: isRaining ? '#0369a1' : '#991b1b',
+            }}>
+              <div style={{
+                ...styles.switchKnob,
+                backgroundColor: isRaining ? 'var(--neon-blue)' : 'var(--neon-red)',
+                boxShadow: isRaining ? '0 0 10px var(--neon-blue-glow)' : '0 0 10px var(--neon-red-glow)',
+              }} />
+            </div>
+          </button>
+        </div>
+
       </div>
 
       {/* SECTIONS */}
@@ -184,7 +230,8 @@ function App() {
       <LoreTable />
       <UnderTheHood />
       <CharacterGallery />
-      <Roadmap />
+      {/* <Roadmap /> */}
+      <CyberSpeaker />
 
       {/* CLANDESTINE FOOTER */}
       <footer style={styles.footer}>

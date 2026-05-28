@@ -11,7 +11,7 @@ const charactersData = [
     color: 'var(--neon-blue)',
     glowColor: 'var(--neon-blue-glow)',
     stats: { speed: 65, power: 85, chicha: 70, chassis: 90 },
-    lore: 'El líder del grupo y el único que todavía intenta mantener algo de dignidad en medio del caos. Es enorme, elegante y está lleno de detalles. Siempre anda limpio, encerado y oliendo a nuevo, algo rarísimo entre tanto humo y polvo. Su problema eterno es que es demasiado ancho para callecitas paceña y cada vez que intenta transformarse termina bloqueando media avenida igual no como si un bloqueo sea un problema en la ciudad Maravilla.',
+    lore: 'El líder del grupo y el único que todavía intenta mantener algo de dignidad en medio del caos. Es enorme, elegante y está lleno de detalles. Siempre anda limpio, encerado y oliendo a nuevo, algo rarísimo entre tanto humo y polvo. Su problema eterno es que es demasiado ancho para las callecitas paceñas y cada vez que intenta transformarse termina bloqueando media avenida, aunque no es como si un bloqueo fuera un problema en la Ciudad Maravilla.',
     specifications: [
       { label: 'CHASIS', value: 'Carrocería King Long 12m Modificada' },
       { label: 'NÚCLEO', value: 'Generador de Fusión Andina a Quinua' },
@@ -31,7 +31,7 @@ const charactersData = [
     lore: 'Viejo, pesado, ruidoso y más lento que obra de alcalde. Cada movimiento suyo viene acompañado de eructos de diésel, humo negro y abundante. Está lleno de bultos, aguayos y bolsas misteriosas que nadie sabe quién dejó ahí. Sus asientos de tela barata sobrevivieron desde la guerra del chaco y su motor funciona a pura fe, aceite reciclado y trancadera.',
     specifications: [
       { label: 'CHASIS', value: 'Dodge D-300 Heavy Metal Body' },
-      { label: 'STICKERS', value: '“Tu envidia es mi potencia”, “A mí no me nadie”, “Si me chocas, me mejoras”' },
+      { label: 'STICKERS', value: '“Tu envidia es mi potencia”, “A mí no me gana nadie”, “Si me chocas, me mejoras”' },
       { label: 'PODER ESPECIAL', value: 'Rayo Voceador: Lanza un grito sónico de “¡al fondo que hay campo!”' },
       { label: 'EFECTO', value: 'Comprime el espacio y mete veinte enemigos donde solo cabían tres.' }
     ]
@@ -45,7 +45,7 @@ const charactersData = [
     color: 'var(--neon-yellow)',
     glowColor: 'var(--neon-yellow-glow)',
     stats: { speed: 75, power: 95, chicha: 88, chassis: 85 },
-    lore: 'El gigante interdepartamental del equipo. Grande, resistente y construido para sobrevivir caminos destruidos, bloqueos eternos y viajes de 18 horas sin descanso. Es medio loquillo se pone a adelantar 5 camiones en una curva, pero es su manera de ser. Fanático de las películas aleatorias y de cargar el celular a ultima hora. Pero no le pregunten del olor porque voces dicen que a veces huele a chisito o peor cof cof.',
+    lore: 'El gigante interdepartamental del equipo. Grande, resistente y construido para sobrevivir caminos destruidos, bloqueos eternos y viajes de 18 horas sin descanso. Es medio loquillo se pone a adelantar 5 camiones en una curva, pero es su manera de ser. Fanático de las películas aleatorias y de cargar el celular a última hora. Pero no le pregunten del olor porque voces dicen que a veces huele a chisito o peor cof cof.',
     specifications: [
       { label: 'CHASIS', value: 'Chasis Flota de Lujo Doble Eje' },
       { label: 'TATUAJES', value: '“Dios guía mi camino”, “No corro, vuelo bajito”, “Prohibido enamorarse...”' },
@@ -62,7 +62,7 @@ const charactersData = [
     color: 'var(--neon-chicha)',
     glowColor: 'var(--neon-chicha-glow)',
     stats: { speed: 90, power: 55, chicha: 95, chassis: 60 },
-    lore: 'Pequeño, agresivo y totalmente impredecible. Maneja como si estuviera compitiendo en Formula 1. Cambia de carril sin avisar, aparece de la nada y desaparece igual de rápido. Está lleno de rayones, golpes y marcas. Medio alzado su puerta es automatica.',
+    lore: 'Pequeño, agresivo y totalmente impredecible. Maneja como si estuviera compitiendo en Fórmula 1. Cambia de carril sin avisar, aparece de la nada y desaparece igual de rápido. Está lleno de rayones, golpes y marcas. Medio alzado, su puerta es automática.',
     specifications: [
       { label: 'STICKERS', value: '“No tengo la culpa de ser tan guapo” o “No soy rápido, ustedes son lentos”' },
       { label: 'CARGA TRASERA', value: 'Aguayos, cajas y hasta pollos vivos sin explicación lógica' },
@@ -842,7 +842,9 @@ const CharacterGallery = () => {
                   onError={() => setImageError(true)}
                 />
               ) : (
-                renderMechaSvg()
+                <svg viewBox="0 0 500 350" style={{ width: '100%', height: '100%', display: 'block' }}>
+                  {renderMechaSvg()}
+                </svg>
               )}
             </div>
 

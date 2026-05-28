@@ -1,31 +1,104 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import soundManager from '../utils/soundManager';
+import HTMLFlipBook from 'react-pageflip';
 
-// RUTA DE IMÁGENES PARA EL CÓMIC INTERACTIVO
-// Puedes colocar aquí las rutas de tus imágenes más tarde (ej. '/imgs/comic1_1.png')
-// Si se dejan vacías (''), el cómic renderizará hermosos planos vectoriales procedimentales como marcadores de posición.
-const comicImages = {
-  page1: {
-    panel1: '',
-    panel2: '',
-    panel3: ''
+// CONFIGURACIÓN DINÁMICA DE ANÉCDOTAS DEL CÓMIC DE LOS UTAFORMERS (DATA-DRIVEN)
+const comicPages = [
+  {
+    image: '/imgs/comic.png',
+    title: 'Utaformers: Anécdotas Paceñas',
+    text: 'La ciudad trancadera, o también llamada ciudad maravilla, nos trae muchos misterios.'
   },
-  page2: {
-    panel1: '',
-    panel2: '',
-    panel3: ''
+  {
+    image: '/imgs/marraqueta.jpg',
+    title: 'Capítulo 1: El Despertar de la marraqueta',
+    text: 'Los Utaformers pelean por un pedazo de marraqueta a falta de gasolina en su sector.'
   },
-  page3: {
-    panel1: '',
-    panel2: '',
-    panel3: ''
+  {
+    image: '/imgs/2.png',
+    title: 'Capítulo 2: Motor de a la Fe de Dios',
+    text: '96 pasajeros a bordo. El motor Cummins de 1978 despierta liberando un humo negro y tóxico.'
   },
-  page4: {
-    panel1: '',
-    panel2: '',
-    panel3: ''
+  {
+    image: '/imgs/7.png',
+    title: 'Capítulo 3: Cerco en el Peaje Autopista',
+    text: 'Las barreras de plasma municipal intentan acorralar a los colectivos. ¡La caravana no se detiene!'
+  },
+  {
+    image: '/imgs/10.png',
+    title: 'Capítulo 4: Los Leds no Son una Etapa',
+    text: 'Huevitron reclama por sus derechos de usar exorbitantes LEDs para mantener su facha.'
+  },
+  {
+    image: '/imgs/comic3.webp',
+    title: 'Capítulo 5: Trameaje Cuántico',
+    text: 'El mecha MiniBu (HiAce 95) distorsiona el espacio paceño para teleportar colectivos a El Alto.'
+  },
+  {
+    image: '/imgs/comic2.webp',
+    title: 'Capítulo 6: Cumbia o no Cumbia, esa es la cuestión',
+    text: 'PrimeKatari y Microtron discuten: "Es aburrido viajar sin mi remix cumbia."'
   }
+];
+
+const ComicPageMedia = ({ src, alt, fallbackFn }) => {
+  const [hasError, setHasError] = useState(false);
+  const [prevSrc, setPrevSrc] = useState(src);
+
+  if (src !== prevSrc) {
+    setPrevSrc(src);
+    setHasError(false);
+  }
+
+  if (src && !hasError) {
+    return (
+      <img
+        src={src}
+        alt={alt}
+        onError={() => setHasError(true)}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+          display: 'block',
+          backgroundColor: '#0c0d10',
+          borderRadius: '4px',
+          boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
+        }}
+      />
+    );
+  }
+
+  return fallbackFn ? fallbackFn() : (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+      height: '100%',
+      background: '#1a1816',
+      color: '#a8a29e',
+      fontFamily: 'var(--font-hud)',
+      padding: '20px',
+      textAlign: 'center',
+      border: '2px dashed #44403c',
+      borderRadius: '4px'
+    }}>
+      <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--neon-yellow)' }}>[ ILUSTRACIÓN CLANDESTINA ]</span>
+      <span style={{ fontSize: '8px', marginTop: '6px', color: '#78716c' }}>Añade {alt} en /imgs/ para desbloquear esta página.</span>
+    </div>
+  );
 };
+
+// Componente de página para HTMLFlipBook
+const ComicPageBlock = forwardRef((props, ref) => {
+  return (
+    <div className="page" ref={ref} style={{ width: '100%', height: '100%', backgroundColor: '#0c0d10', border: '2px solid #2e2e4a', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.8)' }}>
+      {props.children}
+    </div>
+  );
+});
 
 // RUTA DE IMÁGENES PARA EL TELEVISOR CRT RETRO
 // Agrega rutas aquí para sobreescribir los marcadores vectoriales (ej. '/imgs/tv_cam4.png')
@@ -35,114 +108,8 @@ const tvImages = {
   channel13: '/imgs/tv3.jpeg'
 };
 
-// Dibujos vectoriales de marcador de posición para los paneles del cómic
-const drawDodgeChassis = () => (
-  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
-    <rect x="0" y="0" width="120" height="80" fill="#1c1917" />
-    <path d="M 20,40 L 35,22 L 85,22 L 100,40 L 90,56 L 30,56 Z" fill="none" stroke="var(--neon-green)" strokeWidth="1" strokeDasharray="2 2" />
-    <circle cx="40" cy="56" r="8" fill="none" stroke="var(--neon-green)" strokeWidth="1" />
-    <circle cx="80" cy="56" r="8" fill="none" stroke="var(--neon-green)" strokeWidth="1" />
-    <text x="60" y="44" fill="var(--neon-green)" fontSize="6" fontFamily="var(--font-hud)" textAnchor="middle">DODGE D-300 CHASSIS</text>
-  </svg>
-);
 
-const drawEnergyZap = () => (
-  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
-    <rect x="0" y="0" width="120" height="80" fill="#1c1917" />
-    <path d="M 60,10 L 45,45 L 75,35 L 60,70" fill="none" stroke="var(--neon-yellow)" strokeWidth="2" style={{ filter: 'drop-shadow(0 0 4px var(--neon-yellow))' }} />
-    <circle cx="60" cy="40" r="14" fill="none" stroke="var(--neon-chicha)" strokeWidth="0.8" strokeDasharray="3 3" />
-    <text x="60" y="74" fill="var(--text-secondary)" fontSize="5" fontFamily="var(--font-hud)" textAnchor="middle">NÚCLEO DIÉSEL ACTIVO</text>
-  </svg>
-);
 
-const drawAwakening = () => (
-  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
-    <rect x="0" y="0" width="120" height="80" fill="#1c1917" />
-    <circle cx="35" cy="35" r="9" fill="var(--neon-red)" style={{ filter: 'drop-shadow(0 0 6px var(--neon-red))' }} />
-    <circle cx="85" cy="35" r="9" fill="var(--neon-red)" style={{ filter: 'drop-shadow(0 0 6px var(--neon-red))' }} />
-    <path d="M 20,55 Q 50,70 80,55" fill="none" stroke="#ffffff" strokeWidth="1.5" />
-    <text x="60" y="18" fill="var(--neon-red)" fontSize="6" fontFamily="var(--font-hud)" textAnchor="middle" style={{ letterSpacing: '1px' }}>SYSTEM ON: MICROTRON</text>
-  </svg>
-);
-
-const drawPumaSystems = () => (
-  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
-    <rect x="0" y="0" width="120" height="80" fill="#090d16" />
-    <rect x="15" y="25" width="90" height="30" fill="none" stroke="var(--neon-blue)" strokeWidth="1.2" style={{ filter: 'drop-shadow(0 0 4px var(--neon-blue))' }} />
-    <line x1="15" y1="40" x2="105" y2="40" stroke="var(--neon-blue)" strokeWidth="0.6" />
-    <text x="60" y="44" fill="var(--neon-blue)" fontSize="5" fontFamily="var(--font-hud)" textAnchor="middle">KING LONG EDIL v3.2</text>
-  </svg>
-);
-
-const drawBlockade = () => (
-  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
-    <rect x="0" y="0" width="120" height="80" fill="#18181b" />
-    <line x1="10" y1="40" x2="110" y2="40" stroke="var(--neon-red)" strokeWidth="3.5" style={{ filter: 'drop-shadow(0 0 4px var(--neon-red))' }} />
-    <line x1="20" y1="20" x2="100" y2="60" stroke="var(--neon-yellow)" strokeWidth="0.8" strokeDasharray="3 3" />
-    <text x="60" y="32" fill="var(--neon-red)" fontSize="7" fontWeight="bold" fontFamily="var(--font-hud)" textAnchor="middle">BLOQUEO MUNICIPAL</text>
-  </svg>
-);
-
-const drawRebelHangar = () => (
-  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
-    <rect x="0" y="0" width="120" height="80" fill="#1c1917" />
-    <path d="M 10,65 L 30,35 L 90,35 L 110,65" fill="none" stroke="var(--neon-chicha)" strokeWidth="1.5" />
-    <circle cx="45" cy="55" r="5" fill="none" stroke="var(--neon-yellow)" strokeWidth="0.8" />
-    <circle cx="75" cy="55" r="5" fill="none" stroke="var(--neon-yellow)" strokeWidth="0.8" />
-    <text x="60" y="25" fill="var(--neon-chicha)" fontSize="6" fontFamily="var(--font-hud)" textAnchor="middle">TALLER SUBTERRÁNEO</text>
-  </svg>
-);
-
-const drawAutopistaClash = () => (
-  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
-    <rect x="0" y="0" width="120" height="80" fill="#18181b" />
-    <path d="M 40,40 L 15,20 H 35 Z" fill="var(--neon-red)" style={{ filter: 'drop-shadow(0 0 3px var(--neon-red))' }} />
-    <path d="M 80,40 L 105,20 H 85 Z" fill="var(--neon-blue)" style={{ filter: 'drop-shadow(0 0 3px var(--neon-blue))' }} />
-    <circle cx="60" cy="30" r="10" fill="none" stroke="#fff" strokeWidth="0.8" />
-    <text x="60" y="33" fill="#ffffff" fontSize="7" fontWeight="bold" textAnchor="middle">VS</text>
-    <text x="60" y="65" fill="var(--text-secondary)" fontSize="5" fontFamily="var(--font-hud)" textAnchor="middle">CHOQUE DE TITANES</text>
-  </svg>
-);
-
-const drawSquelchRipple = () => (
-  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
-    <rect x="0" y="0" width="120" height="80" fill="#1c1917" />
-    <circle cx="60" cy="40" r="15" fill="none" stroke="var(--neon-green)" strokeWidth="1.5" />
-    <circle cx="60" cy="40" r="28" fill="none" stroke="var(--neon-green)" strokeWidth="0.8" strokeDasharray="3 3" />
-    <text x="60" y="44" fill="var(--neon-green)" fontSize="6" fontFamily="var(--font-hud)" textAnchor="middle">RAYO VOCEADOR</text>
-  </svg>
-);
-
-const drawRadioTower = () => (
-  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
-    <rect x="0" y="0" width="120" height="80" fill="#1c1917" />
-    <line x1="60" y1="70" x2="60" y2="20" stroke="var(--neon-yellow)" strokeWidth="1.5" />
-    <line x1="50" y1="70" x2="60" y2="40" stroke="var(--neon-yellow)" strokeWidth="0.8" />
-    <line x1="70" y1="70" x2="60" y2="40" stroke="var(--neon-yellow)" strokeWidth="0.8" />
-    <circle cx="60" cy="20" r="3.5" fill="var(--neon-red)" style={{ filter: 'drop-shadow(0 0 4px var(--neon-red))' }} />
-    <path d="M 52,15 Q 60,7 68,15" fill="none" stroke="var(--neon-yellow)" strokeWidth="0.8" strokeDasharray="2 2" />
-    <path d="M 44,10 Q 60,-2 76,10" fill="none" stroke="var(--neon-yellow)" strokeWidth="0.5" strokeDasharray="3 3" />
-    <text x="60" y="75" fill="var(--neon-yellow)" fontSize="5.5" fontFamily="var(--font-hud)" textAnchor="middle">SEÑAL DE ALINEACIÓN</text>
-  </svg>
-);
-
-const drawMicrobusCaravan = () => (
-  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
-    <rect x="0" y="0" width="120" height="80" fill="#1c1917" />
-    <path d="M 10,65 Q 40,65 50,45 Q 60,25 90,25" fill="none" stroke="#4b5563" strokeWidth="6" />
-    <rect x="25" y="52" width="12" height="8" rx="2" fill="var(--neon-green)" />
-    <rect x="65" y="16" width="12" height="8" rx="2" fill="var(--neon-chicha)" />
-    <text x="60" y="74" fill="var(--neon-green)" fontSize="6" fontFamily="var(--font-hud)" textAnchor="middle">CARAVANA INICIADA</text>
-  </svg>
-);
-
-// Helper function to render a comic panel
-const renderComicPanelMedia = (imgUrl, placeholderText, svgDrawingFn) => {
-  if (imgUrl) {
-    return <img src={imgUrl} alt={placeholderText} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />;
-  }
-  return svgDrawingFn ? svgDrawingFn() : <div style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>[BOCETO]</div>;
-};
 
 // 5 Emisoras Paceñas de Utaformers
 const radioStations = [
@@ -192,11 +159,8 @@ const LoreTable = () => {
   const [tvChannel, setTvChannel] = useState(4); // 4, 7, 13
   const [tvGlitch, setTvGlitch] = useState(false);
 
-  // Interactive Comic state
-  const [comicPage, setComicPage] = useState(0); // 0, 1, 2
-  const [displayPage, setDisplayPage] = useState(0);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const [flipDirection, setFlipDirection] = useState('next');
+  // Interactive Comic state (Cinematic Single-Panel Parallax)
+  const [comicPage, setComicPage] = useState(0);
 
   // Unfolding newspaper state
   const [isUnfolded, setIsUnfolded] = useState(false);
@@ -217,6 +181,7 @@ const LoreTable = () => {
   // TV periodic analog glitch effect
   useEffect(() => {
     if (!tvPowered) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTvGlitch(false);
       return;
     }
@@ -276,7 +241,7 @@ const LoreTable = () => {
       if (currentStatic < 0.25) {
         // Clear audio sintonizada
         setRadioText(foundStation.report);
-        
+
         // Auto play a voice noise when newly sintonized clearly
         if (lastTunedStation !== foundStation.freq) {
           setLastTunedStation(foundStation.freq);
@@ -342,26 +307,42 @@ const LoreTable = () => {
     setTvPowered(nextPower);
   };
 
-  const handleComicPageChange = (direction) => {
-    if (isFlipping) return; // Prevent double clicks during transition
-    soundManager.playPaperRustle();
+  const flipBookRef = useRef(null);
 
-    const nextPage = direction === 'next'
-      ? Math.min(comicPage + 1, 4)
-      : Math.max(comicPage - 1, 0);
-
-    if (nextPage === comicPage) return; // No change needed
-
-    setFlipDirection(direction);
-    setIsFlipping(true);
-    setDisplayPage(comicPage);
-    setComicPage(nextPage);
-
-    setTimeout(() => {
-      setDisplayPage(nextPage);
-      setIsFlipping(false);
-    }, 600); // matches CSS animation duration
+  const handleNextPage = () => {
+    if (flipBookRef.current && flipBookRef.current.pageFlip) {
+      soundManager.playPaperRustle();
+      try { flipBookRef.current.pageFlip().flipNext(); } catch { /* ignore */ }
+    }
   };
+
+  const handlePrevPage = () => {
+    if (flipBookRef.current && flipBookRef.current.pageFlip) {
+      soundManager.playPaperRustle();
+      try { flipBookRef.current.pageFlip().flipPrev(); } catch { /* ignore */ }
+    }
+  };
+
+  const handleSetPage = (idx) => {
+    if (flipBookRef.current && flipBookRef.current.pageFlip) {
+      soundManager.playPaperRustle();
+      try { flipBookRef.current.pageFlip().turnToPage(idx); } catch { /* ignore */ }
+    }
+  };
+
+  // Keyboard navigation listener
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (activeItem !== 'comic') return;
+      if (e.key === 'ArrowRight') {
+        handleNextPage();
+      } else if (e.key === 'ArrowLeft') {
+        handlePrevPage();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeItem, comicPage]);
 
   const handleOpenNewspaper = () => {
     soundManager.playPaperRustle();
@@ -393,297 +374,7 @@ const LoreTable = () => {
     setActiveItem(null);
   };
 
-  const renderLeftPage = (p) => {
-    switch (p) {
-      case 0:
-        return (
-          <div style={{
-            ...styles.comicLeftPage,
-            background: 'linear-gradient(90deg, #1c1917 0%, #2e2a24 100%)',
-            borderRight: '4px solid #111'
-          }}>
-            <div style={{ ...styles.comicPageHeader, color: 'var(--neon-yellow)' }}>SINDICATO DE MICROS REBELDES</div>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-              gap: '16px',
-              fontFamily: 'var(--font-hud)',
-              color: 'var(--text-secondary)',
-              textAlign: 'center',
-              padding: '20px'
-            }}>
-              <div className="warning-stripes" style={{ height: '8px', width: '100%' }} />
-              <h4 style={{ fontFamily: 'var(--font-mecha)', fontSize: '15px', color: '#ffffff', margin: 0 }}>REGISTRO DE OPERACIONES</h4>
-              <p style={{ fontSize: '9px', lineHeight: '1.4', color: 'var(--text-secondary)' }}>
-                "Este cuaderno de ruta detalla la reactivación andina de motores Cummins y el conflicto vial contra PrimeKatari."
-              </p>
-              <div style={{ border: '1.5px dashed var(--neon-red)', padding: '6px 12px', fontSize: '8px', color: 'var(--neon-red)', fontWeight: 'bold' }}>
-                CLASIFICACIÓN: ALTAMENTE SECTORIAL
-              </div>
-              <div className="warning-stripes" style={{ height: '8px', width: '100%' }} />
-            </div>
-          </div>
-        );
-      case 1:
-        return (
-          <div style={styles.comicLeftPage}>
-            <div style={styles.comicPageHeader}>PÁGINA 1 — EL HALLAZGO EN EL TALLER</div>
-            <div style={styles.comicPanel}>
-              <div style={styles.comicPanelMedia}>
-                {renderComicPanelMedia(comicImages.page1.panel1, 'Don Severo y el motor', drawDodgeChassis)}
-                <div style={styles.comicOnomatopeya} className="neon-text-yellow">¡CRAC!</div>
-              </div>
-              <div style={styles.panelCaption}>
-                Don Severo remueve las planchas de metal oxidadas de su viejo Dodge D-300 de 1978.
-              </div>
-            </div>
-            <div style={styles.comicPanel}>
-              <div style={styles.comicPanelMedia}>
-                {renderComicPanelMedia(comicImages.page1.panel2, 'Líquido de neón derramado', drawEnergyZap)}
-                <div style={styles.speechBubbleLeft}>
-                  "¡Por el Tata Santiago! Este motor Cummins está... ¿brillando?"
-                </div>
-              </div>
-              <div style={styles.panelCaption}>
-                Un resplandor verde chicha emana de los pistones. No es grasa ordinaria; es energía viva de neón.
-              </div>
-            </div>
-          </div>
-        );
-      case 2:
-        return (
-          <div style={styles.comicLeftPage}>
-            <div style={styles.comicPageHeader}>PÁGINA 3 — EL CERCO MUNICIPAL</div>
-            <div style={styles.comicPanel}>
-              <div style={styles.comicPanelMedia}>
-                {renderComicPanelMedia(comicImages.page2.panel1, 'Patrulla Municipal y PrimeKatari', drawPumaSystems)}
-                <div style={styles.comicOnomatopeya} className="neon-text-blue">¡BZZZZT!</div>
-              </div>
-              <div style={styles.panelCaption}>
-                En Sopocachi, los escáneres ediles detectan la anomalía energética. La flota PrimeKatari se moviliza.
-              </div>
-            </div>
-            <div style={styles.comicPanel}>
-              <div style={styles.comicPanelMedia}>
-                {renderComicPanelMedia(comicImages.page2.panel2, 'El bloqueo en la rotonda', drawBlockade)}
-                <div style={styles.speechBubbleLeft}>
-                  "Ningún vehículo fuera de norma transitará hoy. ¡Orden absoluto!"
-                </div>
-              </div>
-              <div style={styles.panelCaption}>
-                Barreras de plasma azul sellan la avenida Arce. Las cebras holográficas patrullan la zona de exclusión.
-              </div>
-            </div>
-          </div>
-        );
-      case 3:
-        return (
-          <div style={styles.comicLeftPage}>
-            <div style={styles.comicPageHeader}>PÁGINA 5 — CHOQUE EN LA AUTOPISTA</div>
-            <div style={styles.comicPanel}>
-              <div style={styles.comicPanelMedia}>
-                {renderComicPanelMedia(comicImages.page3.panel1, 'Choque de titanes', drawAutopistaClash)}
-                <div style={styles.comicOnomatopeya} className="neon-text-red">¡KABOOM!</div>
-              </div>
-              <div style={styles.panelCaption}>
-                El choque en el carril de subida de la autopista sacude las laderas. Hierro contra blindaje de justicia.
-              </div>
-            </div>
-            <div style={styles.comicPanel}>
-              <div style={styles.comicPanelMedia}>
-                {renderComicPanelMedia(comicImages.page3.panel2, 'Rayo Voceador activado', drawSquelchRipple)}
-                <div style={styles.speechBubbleLeft}>
-                  "¡¡AL FONDO HAY SITIO CON COMPRESIÓN ESPACIAL!!"
-                </div>
-              </div>
-              <div style={styles.panelCaption}>
-                Microtron desata la distorsión sónica voceadora. El mecha municipal retrocede aturdido.
-              </div>
-            </div>
-          </div>
-        );
-      case 4:
-        return (
-          <div style={styles.comicLeftPage}>
-            <div style={styles.comicPageHeader}>PÁGINA 7 — CONEXIÓN CRÍPTICA</div>
-            <div style={styles.comicPanel}>
-              <div style={styles.comicPanelMedia}>
-                {renderComicPanelMedia(comicImages.page4.panel1, 'Transmisor de radio', drawRadioTower)}
-                <div style={styles.comicOnomatopeya} className="neon-text-yellow">¡FIUUUU!</div>
-              </div>
-              <div style={styles.panelCaption}>
-                Don Severo activa la radio transceptora, enviando un pulso encriptado a cada hangar y garaje de la urbe.
-              </div>
-            </div>
-            <div style={styles.comicPanel}>
-              <div style={styles.comicPanelMedia}>
-                {renderComicPanelMedia(comicImages.page4.panel2, 'El pulso de radio', drawEnergyZap)}
-                <div style={styles.speechBubbleLeft}>
-                  "¡Atención a todos los colectivos! Es hora de iniciar la caravana de resistencia."
-                </div>
-              </div>
-              <div style={styles.panelCaption}>
-                La señal sintoniza simultáneamente los tableros de cada Utaformer paceño. La red está lista.
-              </div>
-            </div>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const renderRightPage = (p) => {
-    switch (p) {
-      case 0:
-        return (
-          <div style={{
-            ...styles.comicRightPage,
-            background: 'linear-gradient(135deg, #7c2d12 0%, #451a03 100%)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderLeft: '4px solid #111',
-            padding: '24px'
-          }}>
-            {/* Closed binder artwork layout */}
-            <div style={{
-              border: '3px solid #111',
-              borderRadius: '8px',
-              padding: '20px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-              height: '100%',
-              background: 'rgba(5, 6, 10, 0.4)',
-              boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)'
-            }}>
-              <span style={{ fontFamily: 'var(--font-hud)', color: 'var(--neon-yellow)', fontSize: '9px', letterSpacing: '2px', fontWeight: 'bold' }}>
-                UTAFORMERS PACEÑOS
-              </span>
-
-              {/* Giant distressed red title stamp */}
-              <div style={{
-                border: '3.5px double var(--neon-red)',
-                borderRadius: '6px',
-                padding: '10px 14px',
-                margin: '25px 0',
-                transform: 'rotate(-4deg)',
-                textAlign: 'center',
-                boxShadow: '0 0 10px rgba(239, 68, 68, 0.15)'
-              }}>
-                <h3 style={{ fontFamily: 'var(--font-mecha)', fontSize: '20px', color: '#ef4444', margin: 0, fontWeight: '900', letterSpacing: '1px' }}>
-                  EL MISTERIO
-                </h3>
-                <h4 style={{ fontFamily: 'var(--font-mecha)', fontSize: '13px', color: '#ef4444', margin: '4px 0 0 0', fontWeight: '800' }}>
-                  DEL DIÉSEL PACEÑO
-                </h4>
-              </div>
-
-              {/* Pulsing button to open book */}
-              <button 
-                onClick={() => handleComicPageChange('next')}
-                style={{
-                  ...styles.comicNavBtn,
-                  background: 'var(--neon-green)',
-                  color: '#000000',
-                  boxShadow: '0 0 15px var(--neon-green-glow)',
-                  borderColor: 'var(--neon-green)',
-                  animation: 'neon-pulse-green 1.2s infinite alternate',
-                  fontSize: '11px',
-                  fontWeight: '900',
-                  cursor: 'pointer'
-                }}
-              >
-                ABRIR BITÁCORA [ ↵ ]
-              </button>
-            </div>
-          </div>
-        );
-      case 1:
-        return (
-          <div style={styles.comicRightPage}>
-            <div style={styles.comicPageHeader}>PÁGINA 2 — LA CHISPA DEL ALTIPLANO</div>
-            <div style={{ ...styles.comicPanel, minHeight: '220px' }}>
-              <div style={styles.comicPanelMedia}>
-                {renderComicPanelMedia(comicImages.page1.panel3, 'El Despertar de Microtron', drawAwakening)}
-                <div style={styles.speechBubbleCenter} className="flicker-slow">
-                  ¡SISTEMA ACTIVO! INICIANDO CONEXIÓN INTEGRAL SINDICAL
-                </div>
-              </div>
-              <div style={styles.panelCaption}>
-                El microbús ruge sin llave. Las luces traseras parpadean en un patrón binario telúrico.
-              </div>
-            </div>
-          </div>
-        );
-      case 2:
-        return (
-          <div style={styles.comicRightPage}>
-            <div style={styles.comicPageHeader}>PÁGINA 4 — CONSPIRACIÓN EN EL HANGAR</div>
-            <div style={{ ...styles.comicPanel, minHeight: '220px' }}>
-              <div style={styles.comicPanelMedia}>
-                {renderComicPanelMedia(comicImages.page2.panel3, 'Hangar rebelde de micros', drawRebelHangar)}
-                <div style={styles.speechBubbleRight}>
-                  "Activaremos el escape libre estrepitoso. ¡No podrán detener a todos!"
-                </div>
-              </div>
-              <div style={styles.panelCaption}>
-                En las catacumbas de Cotahuma, el Sindicato prepara su ofensiva sónica con escapes tuneados.
-              </div>
-            </div>
-          </div>
-        );
-      case 3:
-        return (
-          <div style={styles.comicRightPage}>
-            <div style={styles.comicPageHeader}>PÁGINA 6 — EL DESTINO PACEÑO</div>
-            <div style={{ ...styles.comicPanel, minHeight: '220px' }}>
-              <div style={styles.comicPanelMedia}>
-                <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
-                  <rect x="0" y="0" width="120" height="80" fill="#1c1917" />
-                  <path d="M 10,75 L 30,55 L 60,35 L 90,55 L 110,75 Z" fill="none" stroke="#4b5563" strokeWidth="0.8" />
-                  <path d="M 60,35 L 75,20 L 95,45 Z" fill="none" stroke="#4b5563" strokeWidth="0.8" />
-                  <path d="M 50,80 L 58,60 L 62,60 L 70,80" fill="none" stroke="var(--neon-yellow)" strokeWidth="1" strokeDasharray="2 2" />
-                  <text x="60" y="74" fill="var(--neon-green)" fontSize="6" fontFamily="var(--font-hud)" textAnchor="middle">RUTA A LA LIBERTAD</text>
-                </svg>
-                <div style={styles.speechBubbleRight}>
-                  "La carretera es nuestra. Siempre lo ha sido."
-                </div>
-              </div>
-              <div style={styles.panelCaption}>
-                Con el Illimani de testigo, el microbús renace como guardián de las laderas. Continuará...
-              </div>
-            </div>
-          </div>
-        );
-      case 4:
-        return (
-          <div style={styles.comicRightPage}>
-            <div style={styles.comicPageHeader}>PÁGINA 8 — LA GRAN CARAVANA REBELDE</div>
-            <div style={{ ...styles.comicPanel, minHeight: '220px' }}>
-              <div style={styles.comicPanelMedia}>
-                {renderComicPanelMedia(comicImages.page4.panel3, 'Caravana de mechas', drawMicrobusCaravan)}
-                <div style={styles.speechBubbleRight}>
-                  "¡Rumbo a la Pérez! Ningún bloqueo municipal nos detendrá."
-                </div>
-              </div>
-              <div style={styles.panelCaption}>
-                Bajo la noche paceña, los motores Cummins y Coasters rugen al unísono, descendiendo en una caravana unificada de mechas. ¡La batalla final de Utaformers está por comenzar!
-              </div>
-            </div>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
+  // Removed renderLeftPage/renderRightPage functions as we transitioned to a Cinematic Single-Panel layout
 
   return (
     <section id="historia" ref={sectionRef} style={styles.section} className="grunge-texture scene-transition">
@@ -765,10 +456,10 @@ const LoreTable = () => {
           100% { top: 110%; }
         }
       `}</style>
-      
+
       {/* Title */}
       <div style={styles.header}>
-        <span style={styles.label}>SECCIÓN 2 — LA BITÁCORA DEL CHOFER</span>
+        <span style={styles.label}>SECCIÓN 2 — EL CÓMIC Y SECRETOS DEL MICRO</span>
         <h2 style={styles.title}>EL SECRETO EN EL PISO DEL MICRO</h2>
         <p style={styles.desc}>
           Los retazos de la guerra andina no se archivan en servidores en la nube. Están tirados sobre la chapa grasosa del microbús. Explora los objetos caídos en las rendijas del piso.
@@ -787,7 +478,7 @@ const LoreTable = () => {
         <div style={{ ...styles.floorRib, bottom: '80px' }} />
         <div style={{ ...styles.floorRib, bottom: '140px' }} />
         <div style={{ ...styles.floorRib, bottom: '200px' }} />
-        
+
         {/* Stray Bolivian Coins (1 Bs, 2Bs, 5Bs) */}
         <div style={{ ...styles.coinBs, left: '8%', bottom: '22px', transform: 'rotate(15deg)' }}>
           <span style={styles.coinLabel}>2Bs</span>
@@ -801,9 +492,9 @@ const LoreTable = () => {
 
         {/* Scattered items */}
         <div style={styles.itemsGrid}>
-          
+
           {/* ITEM 1: CRUMPLED NEWSPAPER (EL DIARIO) */}
-          <div 
+          <div
             onClick={handleOpenNewspaper}
             style={{ ...styles.tableItem, transform: 'rotate(-8deg)' }}
             className="shake-hover"
@@ -831,17 +522,17 @@ const LoreTable = () => {
           </div>
 
           {/* ITEM 2: INTERACTIVE FM RADIO */}
-          <div 
+          <div
             onClick={() => openItemModal('radio')}
-            style={{ 
-              ...styles.tableItem, 
+            style={{
+              ...styles.tableItem,
               transform: 'rotate(5deg)',
               borderColor: radioPowered ? 'var(--neon-green)' : 'var(--border-metal)',
               boxShadow: radioPowered ? '0 0 20px var(--neon-green-glow)' : 'none',
             }}
             className="shake-hover"
           >
-            <div style={{...styles.itemBadge, color: radioPowered ? 'var(--neon-green)' : 'var(--text-secondary)'}}>
+            <div style={{ ...styles.itemBadge, color: radioPowered ? 'var(--neon-green)' : 'var(--text-secondary)' }}>
               [ {radioPowered ? 'RADIO ON' : 'RADIO ANALÓGICA'} ]
             </div>
             <svg width="120" height="90" viewBox="0 0 120 90" style={styles.itemSvg}>
@@ -862,16 +553,16 @@ const LoreTable = () => {
               <circle cx="85" cy="65" r="8" fill="#18181b" stroke="#71717a" />
               <line x1="85" y1="57" x2="85" y2="65" stroke="var(--neon-yellow)" strokeWidth="1.5" />
             </svg>
-            <span style={{...styles.itemLabel, color: radioPowered ? 'var(--neon-green)' : 'var(--text-primary)'}}>
+            <span style={{ ...styles.itemLabel, color: radioPowered ? 'var(--neon-green)' : 'var(--text-primary)' }}>
               RECEPTOR TRANSCEPTOR
             </span>
           </div>
 
           {/* ITEM 3: RETRO CRT TELEVISION */}
-          <div 
+          <div
             onClick={() => openItemModal('retroTv')}
-            style={{ 
-              ...styles.tableItem, 
+            style={{
+              ...styles.tableItem,
               transform: 'rotate(-12deg)',
             }}
             className="shake-hover"
@@ -910,15 +601,15 @@ const LoreTable = () => {
           </div>
 
           {/* ITEM 4: INTERACTIVE COMIC BOOK */}
-          <div 
+          <div
             onClick={() => openItemModal('comic')}
-            style={{ 
-              ...styles.tableItem, 
+            style={{
+              ...styles.tableItem,
               transform: 'rotate(15deg)',
             }}
             className="shake-hover"
           >
-            <div style={styles.itemBadge}>[ CÓMIC CLANDESTINO ]</div>
+            <div style={styles.itemBadge}>[ CÓMIC DE ANÉCDOTAS ]</div>
             <svg width="120" height="90" viewBox="0 0 120 90" style={styles.itemSvg}>
               {/* Open Book pages */}
               <path d="M 15,20 C 35,16 55,26 60,28 C 65,26 85,16 105,20 L 105,75 C 85,71 65,81 60,83 C 55,81 35,71 15,75 Z" fill="#ebdcb9" stroke="#7c2d12" strokeWidth="2.5" />
@@ -928,7 +619,7 @@ const LoreTable = () => {
               <rect x="22" y="26" width="14" height="20" fill="none" stroke="#854d0e" strokeWidth="0.8" />
               <rect x="39" y="26" width="15" height="20" fill="none" stroke="#854d0e" strokeWidth="0.8" />
               <rect x="22" y="49" width="32" height="20" fill="none" stroke="#854d0e" strokeWidth="0.8" />
-              
+
               {/* Comic panels outlines right page */}
               <rect x="66" y="26" width="32" height="20" fill="none" stroke="#854d0e" strokeWidth="0.8" />
               <rect x="66" y="49" width="14" height="20" fill="none" stroke="#854d0e" strokeWidth="0.8" />
@@ -936,7 +627,7 @@ const LoreTable = () => {
               {/* Speech bubble */}
               <path d="M 85,32 Q 91,32 91,35 Q 91,38 85,38 Q 83,38 82,41 L 82,38 Q 79,38 79,35 Q 79,32 85,32 Z" fill="#ffffff" stroke="#000000" strokeWidth="0.8" />
             </svg>
-            <span style={styles.itemLabel}>CÓMIC INTERACTIVO DE RUTA</span>
+            <span style={styles.itemLabel}>CÓMIC DE ANÉCDOTAS UTAFORMERS</span>
           </div>
 
         </div>
@@ -946,33 +637,33 @@ const LoreTable = () => {
       {/* 1. NEWSPAPER: EL DIARIO (3D UNFOLD ANIMATION) */}
       {activeItem === 'newspaper' && (
         <div style={styles.modalOverlay} onClick={handleCloseNewspaper}>
-          <div 
-            className={isUnfolded ? 'unfold-animation' : ''} 
-            style={styles.newspaperModal} 
+          <div
+            className={isUnfolded ? 'unfold-animation' : ''}
+            style={styles.newspaperModal}
             onClick={(e) => e.stopPropagation()}
           >
             <div style={styles.newspaperHeader}>
               <span>EL DIARIO — DECANO DE LA PRENSA NACIONAL • LA PAZ, BOLIVIA</span>
               <button style={styles.closeBtn} onClick={handleCloseNewspaper}>×</button>
             </div>
-            
+
             <div style={styles.newspaperContent}>
               {/* Header Gótico tradicional */}
               <div style={styles.sepiaPaperBanner}>
                 <h1 style={styles.sepiaPaperGothicTitle}>El Diario</h1>
                 <span style={styles.sepiaPaperSubtitle}>Decano de la Prensa Nacional • Fundado en 1904 • Año CXXII • Edición Digital Clandestina</span>
               </div>
-              
+
               <h3 style={styles.newsTitle}>¿PARO SINDICAL O CONFLICTO METROPOLITANO DE MECHAS?</h3>
               <h4 style={styles.newsSubtitle}>Paceños reportan colosos de metal transformándose en Autopista y Pérez Velasco</h4>
-              
+
               <div className="news-columns" style={styles.newsColumns}>
                 <p style={styles.newsText}>
                   La noche paceña se estremeció no por un bloqueo de juntas vecinales, sino por metal crujiente y rugidos de motores diésel modificados con extracto de neón chicha. Reportes provenientes de las laderas de Munaypata y Pampahasi afirman que tradicionales microbuses Dodge de la línea CH y micros Toyota Coaster han deslizado sus paneles oxidados, estirado pistones hidráulicos y erigido como gigantescos guardianes de metal en plena pendiente.
                   <br /><br />
                   ¿La causa? Fuentes secretas del sindicato "Colectivo Rayo" revelan que la antigua radiación telúrica concentrada bajo el templo andino de Tiwanaku y filtrada en los cimientos de la autopista reaccionó químicamente con el diésel pesado y el mocochinchi local. El motor Cummins de 1978 ha cobrado vida autónoma andina. Los Utaformers están en las calles.
                 </p>
-                
+
                 <p style={styles.newsText}>
                   <strong>EL COMBATE POR LAS RUTAS SINDICALES</strong>
                   <br /><br />
@@ -1000,23 +691,23 @@ const LoreTable = () => {
             </div>
 
             <div style={styles.radioCabinetContent}>
-              
+
               {/* Radio Dashboard Interface */}
               <div style={styles.radioPanelGrid}>
-                
+
                 {/* Physical Retro Dial */}
                 <div style={styles.radioDialWrapper}>
-                  
+
                   {/* Dial scale markings */}
                   <div style={styles.dialScale}>
                     <span>88</span><span>90</span><span>92</span><span>94</span><span>96</span><span>98</span><span>100</span><span>102</span><span>104</span><span>106</span><span>108</span>
                   </div>
-                  
+
                   {/* Glass viewport */}
                   <div style={styles.dialGlass}>
                     {/* Tickmarks */}
                     <div style={styles.dialTicks} />
-                    
+
                     {/* Active needle */}
                     <div style={{
                       ...styles.dialNeedle,
@@ -1055,7 +746,7 @@ const LoreTable = () => {
                 {/* Tactical knobs & switches */}
                 <div style={styles.radioControlsRow}>
                   {/* Switch POWER */}
-                  <button 
+                  <button
                     onClick={toggleRadioPower}
                     style={{
                       ...styles.powerToggleBtn,
@@ -1068,7 +759,7 @@ const LoreTable = () => {
                   </button>
 
                   {/* Switch PLAY VOICE */}
-                  <button 
+                  <button
                     onClick={handlePlayVoice}
                     disabled={!radioPowered}
                     style={{
@@ -1087,7 +778,7 @@ const LoreTable = () => {
                   {/* Volume Knob */}
                   <div style={styles.knobControlGroup}>
                     <span style={styles.knobLabel}>VOLUMEN</span>
-                    <input 
+                    <input
                       type="range"
                       min="0"
                       max="100"
@@ -1137,7 +828,7 @@ const LoreTable = () => {
                   }} />
                   <span style={styles.monitorHeaderLabel}>TELEMETRÍA RECEPTORA CRÍPTICA — SINDICATO</span>
                 </div>
-                
+
                 {/* News Content Display area */}
                 <div style={{
                   ...styles.monitorTextArea,
@@ -1173,7 +864,7 @@ const LoreTable = () => {
             <div style={styles.tvCabinetContent}>
               <div style={styles.tvChassis}>
                 {/* Antennas drawn dynamically */}
-                         {/* CRT Screen Border */}
+                {/* CRT Screen Border */}
                 <div style={styles.tvBezel}>
                   {/* Outer curved screen glass */}
                   <div style={{
@@ -1182,7 +873,7 @@ const LoreTable = () => {
                   }}>
                     {/* Retro Scanlines */}
                     <div style={styles.tvScanlines} />
-                    
+
                     {/* Flickering noise glare */}
                     {tvPowered && <div style={styles.tvFlicker} />}
 
@@ -1203,7 +894,7 @@ const LoreTable = () => {
                     ) : (
                       <div style={{
                         ...styles.screenActiveContent,
-                        transform: tvGlitch ? `translate(${(Math.random() - 0.5) * 8}px, ${(Math.random() - 0.5) * 6}px) skewX(${(Math.random() - 0.5) * 10}deg)` : 'none',
+                        transform: tvGlitch ? 'translate(-4px, 4px) skewX(-10deg)' : 'none',
                         filter: tvGlitch ? 'invert(0.1) contrast(2) saturate(0.2)' : 'none',
                         transition: 'transform 0.05s ease-out'
                       }}>
@@ -1265,7 +956,7 @@ const LoreTable = () => {
                                     <circle cx="70" cy="35" r="4" fill="var(--neon-red)" style={{ animation: 'neon-flicker 1s infinite' }} />
                                   </svg>
                                 </div>
-                                <pre style={{...styles.tvTickerText, color: 'var(--neon-blue)'}}>
+                                <pre style={{ ...styles.tvTickerText, color: 'var(--neon-blue)' }}>
                                   {`--- ALERTA VIAL MUNICIPAL ---\n¡Peligro! Detectados disturbios sónicos en la subida a la Ceja. Choferes tradicionales usan bocinas prohibidas de 120 decibelios. PrimeKatari ha sido desplegado para restablecer el orden absoluto.`}
                                 </pre>
                               </div>
@@ -1294,7 +985,7 @@ const LoreTable = () => {
                                   <h4 style={{ color: 'var(--neon-yellow)', margin: '4px 0', fontSize: '12px', fontFamily: 'var(--font-mecha)' }}>Mocochinchi Extremo</h4>
                                   <p style={{ fontSize: '8px', color: '#f4f4f5', margin: 0 }}>"¡Para combatir la altura en tu mecha!"</p>
                                 </div>
-                                <pre style={{...styles.tvTickerText, color: 'var(--neon-chicha)'}}>
+                                <pre style={{ ...styles.tvTickerText, color: 'var(--neon-chicha)' }}>
                                   {`--- SINDICATO INFORMA ---\nSe convoca a todos los afiliados a la parrillada bailable en el hangar de Cotahuma este sábado. Traer su propio líquido refrigerante (singani).`}
                                 </pre>
                               </div>
@@ -1310,7 +1001,7 @@ const LoreTable = () => {
                 <div style={styles.tvControlSide}>
                   <div style={styles.tvControlsGrid}>
                     {/* TV Power button */}
-                    <button 
+                    <button
                       onClick={toggleTvPower}
                       style={{
                         ...styles.tvPowerBtn,
@@ -1366,60 +1057,53 @@ const LoreTable = () => {
           <div style={styles.comicModalContainer} onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             <div style={styles.comicHeader}>
-              <span className="neon-text-red" style={{ fontFamily: 'var(--font-hud)', fontSize: '12px' }}>
-                UTAFORMERS SINDICATO: EL MISTERIO DEL DIÉSEL PACEÑO
+              <span className="neon-text-red" style={{ fontFamily: 'var(--font-hud)', fontSize: '11px', fontWeight: 'bold' }}>
+                UTAFORMERS: ANÉCDOTAS PACEÑAS 3D
               </span>
               <button style={styles.closeBtnComic} onClick={closeItemModal}>×</button>
             </div>
 
-            {/* Comic Book Body */}
-            <div style={styles.comicBookWrapper}>
-              <div style={styles.comicBook}>
-                {!isFlipping ? (
-                  <div style={styles.comicDoublePage}>
-                    {renderLeftPage(comicPage)}
-                    {renderRightPage(comicPage)}
-                  </div>
-                ) : (
-                  <div style={{ ...styles.comicDoublePage, position: 'relative' }}>
-                    {/* Background Static Pages */}
-                    {flipDirection === 'next' ? (
-                      <>
-                        {renderLeftPage(displayPage)}
-                        {renderRightPage(comicPage)}
-                      </>
-                    ) : (
-                      <>
-                        {renderLeftPage(comicPage)}
-                        {renderRightPage(displayPage)}
-                      </>
-                    )}
-
-                    {/* 3D Flipping Sheet */}
-                    <div
-                      className={`flipping-sheet ${flipDirection}`}
-                      style={{
-                        ...styles.flippingSheet3D,
-                        transformOrigin: flipDirection === 'next' ? 'left center' : 'right center',
-                        left: flipDirection === 'next' ? '50%' : '0%',
-                      }}
-                    >
-                      <div style={styles.flippingFaceFront}>
-                        {flipDirection === 'next' ? renderRightPage(displayPage) : renderLeftPage(displayPage)}
+            {/* Comic Panel Body */}
+            <div style={{ ...styles.comicBookWrapper, padding: '20px', alignItems: 'center' }}>
+              <div style={{ width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'center' }}>
+                <HTMLFlipBook
+                  width={340}
+                  height={480}
+                  size="stretch"
+                  minWidth={280}
+                  maxWidth={450}
+                  minHeight={400}
+                  maxHeight={600}
+                  maxShadowOpacity={0.5}
+                  showCover={true}
+                  mobileScrollSupport={true}
+                  className="comic-flipbook"
+                  onFlip={(e) => setComicPage(e.data)}
+                  ref={flipBookRef}
+                >
+                  {comicPages.map((page, index) => (
+                    <ComicPageBlock key={index}>
+                      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#090a0f' }}>
+                        <div style={{ flex: 1, padding: '10px', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <ComicPageMedia src={page.image} alt={page.title} />
+                        </div>
+                        <div style={{ padding: '12px 15px', background: '#1a1816', borderTop: '2px solid #2e2e4a', minHeight: '100px' }}>
+                          <h3 style={{ ...styles.comicTextTitle, fontSize: '12px' }}>{page.title}</h3>
+                          <div style={{ marginTop: '8px' }}>
+                            <p style={{ ...styles.comicDialogueText, color: '#a8a29e', fontSize: '9px', lineHeight: '1.4' }}>{page.text}</p>
+                          </div>
+                        </div>
                       </div>
-                      <div style={styles.flippingFaceBack}>
-                        {flipDirection === 'next' ? renderLeftPage(comicPage) : renderRightPage(comicPage)}
-                      </div>
-                    </div>
-                  </div>
-                )}
+                    </ComicPageBlock>
+                  ))}
+                </HTMLFlipBook>
               </div>
             </div>
 
-            {/* Comic Navigation Footer */}
+            {/* Comic Navigation Footer with Dots */}
             <div style={styles.comicNavigation}>
-              <button 
-                onClick={() => handleComicPageChange('prev')} 
+              <button
+                onClick={handlePrevPage}
                 disabled={comicPage === 0}
                 style={{
                   ...styles.comicNavBtn,
@@ -1429,27 +1113,37 @@ const LoreTable = () => {
               >
                 PORTADA / ATRÁS
               </button>
-              
-              <span style={styles.comicPageIndicator}>
-                {comicPage === 0 
-                  ? 'PORTADA — BITÁCORA CONFIDENCIAL' 
-                  : `PÁGINA ${comicPage * 2 - 1} - ${comicPage * 2} DE 8`}
-              </span>
 
-              <button 
-                onClick={() => handleComicPageChange('next')} 
-                disabled={comicPage === 4}
+              {/* Dots list */}
+              <div style={styles.slideDotsContainer}>
+                {comicPages.map((_, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => handleSetPage(idx)}
+                    style={{
+                      ...styles.slideDot,
+                      backgroundColor: comicPage === idx ? 'var(--neon-green)' : '#2e2e4a',
+                      boxShadow: comicPage === idx ? '0 0 8px var(--neon-green)' : 'none',
+                      transform: comicPage === idx ? 'scale(1.25)' : 'scale(1)',
+                    }}
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={handleNextPage}
+                disabled={comicPage === comicPages.length - 1}
                 style={{
                   ...styles.comicNavBtn,
-                  opacity: comicPage === 4 ? 0.4 : 1,
-                  cursor: comicPage === 4 ? 'default' : 'pointer',
+                  opacity: comicPage === comicPages.length - 1 ? 0.4 : 1,
+                  cursor: comicPage === comicPages.length - 1 ? 'default' : 'pointer',
                   background: comicPage === 0 ? 'var(--neon-green)' : '#7c2d12',
                   borderColor: comicPage === 0 ? 'var(--neon-green)' : '#290f02',
                   color: comicPage === 0 ? '#000000' : '#ebdcb9',
                   boxShadow: comicPage === 0 ? '0 0 10px var(--neon-green-glow)' : 'none'
                 }}
               >
-                {comicPage === 0 ? 'ABRIR BITÁCORA' : 'PÁG SIGUIENTE'}
+                {comicPage === 0 ? 'ABRIR CÓMIC' : 'PÁG SIGUIENTE'}
               </button>
             </div>
           </div>
@@ -2165,18 +1859,21 @@ const styles = {
 
   // Comic Clandestino Styles
   comicModalContainer: {
-    background: '#451a03', // rich leather-bound cover background
-    border: '6px solid #290f02',
-    boxShadow: '0 30px 70px rgba(0,0,0,0.85)',
-    borderRadius: '10px',
-    maxWidth: '900px',
-    width: '100%',
+    background: '#09090e',
+    border: '4px solid #2e2e4a',
+    boxShadow: '0 0 35px rgba(0, 229, 255, 0.2), inset 0 0 20px rgba(0,0,0,0.8)',
+    borderRadius: '12px',
+    maxWidth: '750px',
+    width: '95%',
+    maxHeight: '92vh',
+    display: 'flex',
+    flexDirection: 'column',
     overflow: 'hidden',
   },
   comicHeader: {
-    background: '#290f02',
-    borderBottom: '2.5px solid #180901',
-    padding: '10px 20px',
+    background: '#12121e',
+    borderBottom: '2px solid #222235',
+    padding: '12px 20px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -2191,187 +1888,153 @@ const styles = {
     cursor: 'pointer',
   },
   comicBookWrapper: {
-    padding: '24px',
-    background: 'radial-gradient(circle at center, #2e1202 0%, #150801 100%)',
+    padding: '24px 24px 16px 24px',
+    background: 'radial-gradient(circle at center, #11111d 0%, #06060c 100%)',
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 0,
+    gap: '16px',
   },
-  comicBook: {
+  comicPanelContainer: {
     width: '100%',
-    background: '#f5efe0', // old weathered page parchment
-    border: '2px solid #854d0e',
-    boxShadow: 'inset 0 0 40px rgba(133, 77, 14, 0.2), 0 15px 30px rgba(0,0,0,0.4)',
-    borderRadius: '4px',
-    position: 'relative',
-    overflow: 'hidden',
-    minHeight: '380px',
+    maxWidth: '520px',
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 0,
+    transformStyle: 'preserve-3d',
+    transition: 'transform 0.1s ease-out, opacity 0.15s ease-in-out',
   },
-  comicDoublePage: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+  comicPanelBorders: {
+    width: '100%',
     height: '100%',
-    minHeight: '380px',
-  },
-  comicLeftPage: {
-    borderRight: '2px solid rgba(133, 77, 14, 0.35)', // book center fold line shadow
-    padding: '18px 24px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-    background: 'linear-gradient(90deg, rgba(133,77,14,0.06) 0%, transparent 10%, transparent 92%, rgba(133,77,14,0.18) 100%)',
-  },
-  comicRightPage: {
-    padding: '18px 24px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-    background: 'linear-gradient(270deg, rgba(133,77,14,0.06) 0%, transparent 10%, transparent 92%, rgba(133,77,14,0.18) 100%)',
-  },
-  comicPageHeader: {
-    fontFamily: 'var(--font-hud)',
-    fontSize: '9px',
-    color: '#854d0e',
-    fontWeight: 'bold',
-    letterSpacing: '1px',
-    textAlign: 'center',
-    borderBottom: '1px dashed rgba(133, 77, 14, 0.4)',
-    paddingBottom: '3px',
-  },
-  comicPanel: {
-    background: '#1c1917', // dark backdrop inside panel
-    border: '3px solid #000000',
-    borderRadius: '2px',
+    background: '#040408',
+    border: '4px solid #000000',
+    borderRadius: '8px',
+    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.7), 0 0 15px rgba(239, 68, 68, 0.15)',
     overflow: 'hidden',
     position: 'relative',
     display: 'flex',
-    flexDirection: 'column',
-    boxShadow: '4px 4px 0px rgba(0,0,0,0.2)',
-    flexGrow: 1,
-    minHeight: '140px',
-  },
-  comicPanelSmallRow: {
-    display: 'flex',
-    gap: '12px',
-    flexGrow: 1.1,
-  },
-  comicPanelBig: {
-    background: '#1c1917',
-    border: '3px solid #000000',
-    borderRadius: '2px',
-    overflow: 'hidden',
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    boxShadow: '4px 4px 0px rgba(0,0,0,0.2)',
-    minHeight: '120px',
-    flexGrow: 0.9,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   comicPanelMedia: {
     width: '100%',
     height: '100%',
     overflow: 'hidden',
-    flexGrow: 1,
-    position: 'relative',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  panelCaption: {
-    background: '#fffeb3', // classic yellow caption box
-    borderTop: '2px solid #000000',
-    color: '#000000',
-    fontSize: '8.5px',
-    fontWeight: 'bold',
-    padding: '4px 8px',
-    fontFamily: 'var(--font-title)',
-    textAlign: 'left',
-    lineHeight: '1.2',
-  },
-  speechBubbleLeft: {
+  comicShineOverlay: {
     position: 'absolute',
-    bottom: '40px',
-    left: '12px',
-    maxWidth: '160px',
-    background: '#ffffff',
-    border: '2px solid #000000',
-    borderRadius: '10px',
-    padding: '4px 8px',
-    fontSize: '8px',
-    fontWeight: 'bold',
-    color: '#000000',
-    lineHeight: '1.2',
-    textAlign: 'left',
-    fontFamily: 'var(--font-title)',
-    boxShadow: '2px 2px 0px rgba(0,0,0,0.15)',
-  },
-  speechBubbleRight: {
-    position: 'absolute',
-    bottom: '10px',
-    right: '12px',
-    maxWidth: '150px',
-    background: '#ffffff',
-    border: '2px solid #000000',
-    borderRadius: '10px',
-    padding: '4px 8px',
-    fontSize: '8px',
-    fontWeight: 'bold',
-    color: '#000000',
-    lineHeight: '1.2',
-    textAlign: 'left',
-    fontFamily: 'var(--font-title)',
-    boxShadow: '2px 2px 0px rgba(0,0,0,0.15)',
-  },
-  speechBubbleCenter: {
-    position: 'absolute',
-    top: '12px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    maxWidth: '220px',
-    width: '85%',
-    background: '#ffffff',
-    border: '2px solid #000000',
-    borderRadius: '8px',
-    padding: '4px 8px',
-    fontSize: '8.5px',
-    fontWeight: '900',
-    color: '#ef4444', // dramatic red speech text
-    lineHeight: '1.2',
-    textAlign: 'center',
-    fontFamily: 'var(--font-mecha)',
-    boxShadow: '3px 3px 0px rgba(0,0,0,0.2)',
-  },
-  comicOnomatopeya: {
-    position: 'absolute',
-    top: '15px',
-    left: '15px',
-    fontFamily: 'var(--font-mecha)',
-    fontSize: '18px',
-    fontWeight: '900',
-    letterSpacing: '1px',
-    transform: 'rotate(-12deg)',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
     pointerEvents: 'none',
+    zIndex: 5,
+    mixBlendMode: 'plus-lighter',
+    transition: 'background 0.1s ease-out',
+  },
+  overlayArrow: {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    background: 'rgba(0,0,0,0.6)',
+    border: '1.5px solid rgba(255,255,255,0.15)',
+    color: '#ffffff',
+    fontSize: '24px',
+    lineHeight: '34px',
+    textAlign: 'center',
+    cursor: 'pointer',
     zIndex: 8,
+    transition: 'all 0.2s ease',
+    opacity: 0.7,
+    boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+  },
+  comicTextSection: {
+    width: '100%',
+    maxWidth: '520px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+    textAlign: 'center',
+  },
+  comicTextTitle: {
+    fontFamily: 'var(--font-mecha)',
+    fontSize: '14px',
+    color: 'var(--neon-yellow)',
+    margin: 0,
+    fontWeight: 'bold',
+    letterSpacing: '1px',
+    textShadow: '0 0 8px rgba(253, 224, 71, 0.3)',
+  },
+  comicDialogueBox: {
+    background: '#fffeb3',
+    border: '2.5px solid #000000',
+    borderRadius: '4px',
+    padding: '8px 14px',
+    boxShadow: '3px 3px 0px rgba(0,0,0,0.3)',
+    position: 'relative',
+    textAlign: 'left',
+  },
+  comicDialogueSpokesperson: {
+    fontFamily: 'var(--font-hud)',
+    fontSize: '7.5px',
+    fontWeight: '900',
+    color: '#dc2626',
+    letterSpacing: '1px',
+    marginBottom: '2px',
+  },
+  comicDialogueText: {
+    fontFamily: 'var(--font-title)',
+    fontSize: '10px',
+    fontWeight: 'bold',
+    color: '#000000',
+    margin: 0,
+    lineHeight: '1.3',
   },
   comicNavigation: {
-    background: '#290f02',
-    padding: '12px 24px',
+    background: '#12121e',
+    padding: '12px 20px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderTop: '2.5px solid #180901',
+    borderTop: '2px solid #222235',
   },
   comicNavBtn: {
-    background: '#7c2d12',
-    color: '#ebdcb9',
-    border: '2px solid #290f02',
+    background: '#2e2e4a',
+    color: '#cbd5e1',
+    border: '1.5px solid #3f3f66',
     borderRadius: '4px',
-    padding: '6px 16px',
-    fontFamily: 'var(--font-mecha)',
+    padding: '6px 14px',
+    fontFamily: 'var(--font-hud)',
     fontWeight: 'bold',
-    fontSize: '11px',
-    letterSpacing: '1px',
+    fontSize: '10px',
+    letterSpacing: '1.5px',
     transition: 'all 0.15s ease',
   },
-  comicPageIndicator: {
-    fontFamily: 'var(--font-hud)',
-    fontSize: '10px',
-    color: '#ebdcb9',
-    letterSpacing: '1px',
+  slideDotsContainer: {
+    display: 'flex',
+    gap: '8px',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  slideDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    cursor: 'pointer',
+    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
   },
   tvChannelImage: {
     width: '100%',

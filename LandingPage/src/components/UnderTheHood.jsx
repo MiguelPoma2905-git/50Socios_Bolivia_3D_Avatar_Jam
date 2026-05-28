@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import soundManager from '../utils/soundManager';
 
 const UnderTheHood = () => {
-  const [gear, setGear] = useState(4); // 1: Sketch, 2: Wireframe, 3: Texture, 4: Render
+  const [gear, setGear] = useState(1);
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
 
-  // Trigger scanning laser line sweep interval when isScanning is active
+  // Trigger scanning laser line sweep interval
   useEffect(() => {
     if (!isScanning) return;
 
@@ -25,6 +25,18 @@ const UnderTheHood = () => {
     return () => clearInterval(interval);
   }, [isScanning]);
 
+  // Always run an infinite background scan for gear 1 (Hologram)
+  const [infiniteScan, setInfiniteScan] = useState(0);
+  useEffect(() => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 1.5;
+      if (progress > 100) progress = -10;
+      setInfiniteScan(progress);
+    }, 30);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleGearShift = (notch) => {
     if (notch === gear) return;
     soundManager.playTapeClick();
@@ -38,10 +50,10 @@ const UnderTheHood = () => {
 
   const getGearLabel = () => {
     switch (gear) {
-      case 1: return '1ª MARCHA: EL BOCETO (LÁPIZ)';
-      case 2: return '2ª MARCHA: EL HOLOGRAMA (WIREFRAME)';
-      case 3: return '3ª MARCHA: EL CHASIS (METAL Y GRASA)';
-      case 4: return '4ª MARCHA: OPERACIÓN COMBATE PACEÑO';
+      case 1: return '1ª MARCHA: HOLOGRAMA (RAYOS X)';
+      case 2: return '2ª MARCHA: PERFIL DEL MICROTRON';
+      case 3: return '3ª MARCHA: ESTADO DEL CHASIS';
+      case 4: return '4ª MARCHA: REPUTACIÓN SINDICAL';
       default: return '';
     }
   };
@@ -54,13 +66,12 @@ const UnderTheHood = () => {
         
         {/* LEFT COLUMN: MECHA STAGE MONITOR */}
         <div style={styles.monitorContainer} className="metal-panel">
-          {/* Warning stripes bezel */}
           <div style={styles.monitorBezel} className="warning-stripes" />
           
           <div style={styles.screenInner}>
             <div style={styles.scanlines} />
 
-            {/* Scanning Laser Line */}
+            {/* Sweep Laser Line on Gear Change */}
             {isScanning && (
               <div style={{
                 ...styles.laserLine,
@@ -68,11 +79,19 @@ const UnderTheHood = () => {
               }} />
             )}
 
-            {/* Holographic Diagnostic HUD Details */}
+            {/* Infinite Laser Line on Hologram Gear */}
+            {gear === 1 && !isScanning && (
+              <div style={{
+                ...styles.laserLine,
+                left: `${infiniteScan}%`,
+                opacity: 0.5,
+              }} />
+            )}
+
             <div style={styles.hudOverlay}>
               <div style={styles.hudHeader}>
                 <span className="neon-text-blue">TELEMETRÍA: UTAFORMERS_3D v0.98</span>
-                <span style={{ marginLeft: 'auto' }}>RPM: {gear}200 G/M</span>
+                <span style={{ marginLeft: 'auto' }}>GEAR: {gear}</span>
               </div>
               <div style={styles.hudFooter}>
                 <span>BITÁCORA TALLER: ACTIVA</span>
@@ -80,135 +99,124 @@ const UnderTheHood = () => {
               </div>
             </div>
 
-            {/* DRAWING VIEWER LAYERS */}
-            {/* LAYER 1: BOCETO (Gear 1) */}
+            {/* LAYER 1: HOLOGRAMA */}
             <div style={{
               ...styles.layerContent,
               opacity: gear === 1 ? 1 : 0,
-              background: 'var(--bg-deep)',
-              color: 'var(--text-primary)',
+              background: '#020617',
+              color: 'var(--neon-blue)',
+              pointerEvents: gear === 1 ? 'auto' : 'none',
+              padding: '20px',
             }}>
-              {/* Grid backdrop */}
-              <div style={styles.paperGrid} />
-              <div style={styles.stageTitlePaper}>DISEÑO CONCEPTUAL</div>
+              <div style={{...styles.stageTitleHud, zIndex: 5}} className="neon-text-blue">HOLOGRAMA DE CARCASA</div>
               
-              {/* Concept Sketch Vector drawing */}
-              <svg viewBox="0 0 500 300" style={styles.mechaSvg}>
-                <g stroke="var(--text-primary)" strokeWidth="1" fill="none" opacity="0.6">
-                  {/* Grid layout guide lines */}
-                  <circle cx="250" cy="150" r="110" stroke="var(--border-metal)" strokeWidth="0.5" strokeDasharray="3 3" />
-                  <rect x="130" y="40" width="240" height="220" stroke="var(--border-metal)" strokeWidth="0.5" strokeDasharray="5 5" />
-                  
-                  {/* Heavy Mecha Outline */}
-                  <path d="M 140,150 L 250,90 L 360,150 L 340,240 L 160,240 Z" strokeWidth="1.5" />
-                  <circle cx="180" cy="180" r="14" />
-                  <circle cx="320" cy="180" r="14" />
-                  <rect x="200" y="105" width="100" height="20" />
-                  <path d="M 210,115 H 290" />
-                  
-                  <path d="M 170,240 L 140,285 L 170,290" strokeWidth="2" />
-                  <path d="M 330,240 L 360,285 L 330,290" strokeWidth="2" />
-                  
-                  <text x="140" y="60" fontFamily="var(--font-hud)" fontSize="9" fill="var(--text-secondary)">Fig 1. Chasis Dodge D-300</text>
-                  <text x="300" y="270" fontFamily="var(--font-hud)" fontSize="9" fill="var(--text-secondary)">Soporte: Adoquín Hidráulico</text>
-                </g>
-              </svg>
+              <img 
+                src="/holograma_microtron.jpg" 
+                alt="Microtron Holograma"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 0 10px var(--neon-blue-glow))',
+                  position: 'relative',
+                  zIndex: 2,
+                }} 
+              />
             </div>
 
-            {/* LAYER 2: WIREFRAME (Gear 2) */}
+            {/* LAYER 2: PERFIL */}
             <div style={{
               ...styles.layerContent,
               opacity: gear === 2 ? 1 : 0,
-              background: '#020617', // holographic blue remains dark for neon glow fidelity
-              color: 'var(--neon-blue)',
+              background: '#040714',
+              pointerEvents: gear === 2 ? 'auto' : 'none',
+              padding: '60px 40px',
             }}>
-              <div style={styles.stageTitleHud} className="neon-text-blue">HOLOGRAPHIC MESH VIEW</div>
-              
-              <svg viewBox="0 0 500 300" style={styles.mechaSvg}>
-                <g stroke="var(--neon-blue)" strokeWidth="0.8" fill="none" opacity="0.9" filter="drop-shadow(0 0 4px var(--neon-blue-glow))">
-                  <polygon points="250,60 140,120 180,240 250,220" />
-                  <polygon points="250,60 360,120 320,240 250,220" />
-                  <polygon points="140,120 360,120 320,240 180,240" />
-                  <line x1="250" y1="60" x2="250" y2="220" />
-                  <line x1="140" y1="120" x2="250" y2="220" />
-                  <line x1="360" y1="120" x2="250" y2="220" />
-                  <line x1="180" y1="240" x2="250" y2="220" />
-                  <line x1="320" y1="240" x2="250" y2="220" />
-                  
-                  <circle cx="250" cy="60" r="3.5" fill="var(--neon-blue)" />
-                  <circle cx="140" cy="120" r="3.5" fill="var(--neon-blue)" />
-                  <circle cx="360" cy="120" r="3.5" fill="var(--neon-blue)" />
-                  <circle cx="180" cy="240" r="3.5" fill="var(--neon-blue)" />
-                  <circle cx="320" cy="240" r="3.5" fill="var(--neon-blue)" />
-                  <circle cx="250" cy="220" r="3.5" fill="var(--neon-blue)" />
-
-                  <circle cx="250" cy="140" r="45" strokeDasharray="3 3" />
-                  <circle cx="250" cy="140" r="60" strokeWidth="0.4" />
-                </g>
-              </svg>
+              <div style={styles.dataRow}>
+                <span style={styles.dataLabel}>NOMBRE SINDICAL:</span>
+                <span style={styles.dataValue} className="neon-text-chicha">CHASIS-17 “EL VOLADOR”</span>
+              </div>
+              <div style={styles.dataRow}>
+                <span style={styles.dataLabel}>LÍNEA ORIGINAL:</span>
+                <span style={styles.dataValue}>CEJA → PÉREZ → VILLA FÁTIMA</span>
+              </div>
+              <div style={styles.dataRow}>
+                <span style={styles.dataLabel}>TRANSFORMACIÓN:</span>
+                <span style={styles.dataValue} className="neon-text-red">CLANDESTINA / TALLER NO REGISTRADO</span>
+              </div>
+              <div style={styles.dataRow}>
+                <span style={styles.dataLabel}>KILOMETRAJE:</span>
+                <span style={styles.dataValue}>“MEJOR NO PREGUNTAR”</span>
+              </div>
             </div>
 
-            {/* LAYER 3: METAL TEXTURE (Gear 3) */}
+            {/* LAYER 3: ESTADO DEL CHASIS */}
             <div style={{
               ...styles.layerContent,
               opacity: gear === 3 ? 1 : 0,
-              background: '#1c1917',
-              color: '#d4d4d8',
+              background: '#0a0a0f',
+              pointerEvents: gear === 3 ? 'auto' : 'none',
+              padding: '40px',
+              justifyContent: 'flex-start',
             }}>
-              <div style={styles.stageTitleTextured}>METAL DURO & RUSTIC DUST</div>
-              
-              <svg viewBox="0 0 500 300" style={styles.mechaSvg}>
-                <g fill="#3f3f46" stroke="#71717a" strokeWidth="2">
-                  <path d="M 130,130 L 250,70 L 370,130 L 330,230 L 170,230 Z" />
-                  <path d="M 150,150 L 250,110 L 350,150 L 310,220 L 190,220 Z" fill="#27272a" stroke="#52525b" strokeWidth="1.5" />
-                  
-                  <circle cx="160" cy="160" r="2.5" fill="#18181b" />
-                  <circle cx="340" cy="160" r="2.5" fill="#18181b" />
-                  <circle cx="200" cy="210" r="2.5" fill="#18181b" />
-                  <circle cx="300" cy="210" r="2.5" fill="#18181b" />
+              <div style={styles.statsGrid}>
+                <div style={styles.statBox}>
+                  <div style={styles.statNum}>12</div>
+                  <div style={styles.statDesc}>CHOQUES SOBREVIVIDOS</div>
+                </div>
+                <div style={styles.statBox}>
+                  <div style={styles.statNum}>5</div>
+                  <div style={styles.statDesc}>VECES REPINTADO</div>
+                </div>
+                <div style={styles.statBox}>
+                  <div style={styles.statNum}>47</div>
+                  <div style={styles.statDesc}>STICKERS ACUMULADOS</div>
+                </div>
+              </div>
 
-                  <path d="M 245,122 C 245,150 255,160 253,190" fill="none" stroke="#09090b" strokeWidth="4" opacity="0.65" />
-                </g>
-              </svg>
+              <div style={styles.statusList}>
+                <div style={styles.statusItem}><span style={{color: 'var(--text-secondary)'}}>EMBRAGUE:</span> <span style={{fontFamily: 'var(--font-mecha)', fontSize: '13px', color: 'var(--neon-yellow)'}}>LLORANDO</span></div>
+                <div style={styles.statusItem}><span style={{color: 'var(--text-secondary)'}}>NEUMÁTICOS:</span> <span style={{fontFamily: 'var(--font-mecha)', fontSize: '13px', color: 'var(--neon-red)'}}>LISOS COMO MESA</span></div>
+                <div style={styles.statusItem}><span style={{color: 'var(--text-secondary)'}}>COMBUSTIBLE:</span> <span style={{fontFamily: 'var(--font-mecha)', fontSize: '13px'}}>PREMIUM (SI HAY PLATA)</span></div>
+                <div style={styles.statusItem}><span style={{color: 'var(--text-secondary)'}}>HUMO NEGRO:</span> <span style={{fontFamily: 'var(--font-mecha)', fontSize: '13px', color: 'var(--neon-red)'}}>PREOCUPANTE</span></div>
+                <div style={styles.statusItem}><span style={{color: 'var(--text-secondary)'}}>SUSPENSIÓN:</span> <span style={{fontFamily: 'var(--font-mecha)', fontSize: '13px'}}>BENDECIDA POR DIOSITO</span></div>
+                <div style={styles.statusItem}><span style={{color: 'var(--text-secondary)'}}>BOCINA:</span> <span style={{fontFamily: 'var(--font-mecha)', fontSize: '13px'}}>PARA HACER RENEGAR</span></div>
+                <div style={styles.statusItem}><span style={{color: 'var(--text-secondary)'}}>SOAT:</span> <span style={{fontFamily: 'var(--font-mecha)', fontSize: '13px', color: 'var(--neon-green)'}}>MISTERIOSAMENTE VIGENTE</span></div>
+              </div>
             </div>
 
-            {/* LAYER 4: FULL ACTION RENDER (Gear 4) */}
+            {/* LAYER 4: REPUTACIÓN */}
             <div style={{
               ...styles.layerContent,
               opacity: gear === 4 ? 1 : 0,
-              background: 'radial-gradient(circle at center, var(--bg-dark) 0%, var(--bg-deep) 100%)',
+              background: '#0d0404',
+              pointerEvents: gear === 4 ? 'auto' : 'none',
+              padding: '50px 40px',
+              justifyContent: 'center',
             }}>
-              <div style={styles.stageTitleRender} className="neon-text-red">OPERATIVO EN COMBATE</div>
+              <div style={styles.repContainer}>
+                <div style={styles.repRow}>
+                  <span style={styles.repLabel}>RESPETO SINDICAL:</span>
+                  <span style={styles.repStars}>★★★★☆</span>
+                </div>
+                <div style={styles.repRow}>
+                  <span style={styles.repLabel}>CARRERA ILEGAL PROB.:</span>
+                  <span style={styles.repValue} className="neon-text-red">89%</span>
+                </div>
+                <div style={styles.repRow}>
+                  <span style={styles.repLabel}>ENEMISTAD PUMAKATARI:</span>
+                  <span style={styles.repDanger}>ALTA (NIVEL ROJO)</span>
+                </div>
+                <div style={styles.repRow}>
+                  <span style={styles.repLabel}>NIVEL EGO IA:</span>
+                  <span style={styles.repDanger}>EXCESIVO</span>
+                </div>
+              </div>
               
-              <svg viewBox="0 0 500 300" style={styles.mechaSvg}>
-                <ellipse cx="250" cy="265" rx="140" ry="12" fill="var(--neon-blue-glow)" filter="blur(5px)" />
-
-                <g stroke="#27272a" strokeWidth="2">
-                  {/* Colectivo Red Paint */}
-                  <path d="M 130,130 L 250,70 L 370,130 L 330,230 L 170,230 Z" fill="#D94747" />
-                  {/* Andean Chicha Deco (Electric green/magenta highlights) */}
-                  <path d="M 138,155 L 250,115 L 362,155 L 340,195 L 160,195 Z" fill="var(--neon-chicha)" stroke="var(--neon-chicha)" strokeWidth="1.5" />
-                  <path d="M 148,175 L 250,140 L 352,175 L 340,195 L 160,195 Z" fill="#F4B400" />
-
-                  {/* Windshield */}
-                  <rect x="200" y="80" width="100" height="20" fill="#090a0f" stroke="#F4B400" strokeWidth="1.5" />
-                  <text x="250" y="93" fill="#F4B400" fontFamily="var(--font-hud)" fontSize="9" fontWeight="bold" textAnchor="middle">
-                    PÉREZ - AUTOPISTA
-                  </text>
-
-                  {/* Headlights */}
-                  <circle cx="170" cy="210" r="10" fill="#F4B400" stroke="#f4f4f5" strokeWidth="1.5" style={{ filter: 'drop-shadow(0 0 10px var(--neon-yellow))' }} />
-                  <circle cx="330" cy="210" r="10" fill="#F4B400" stroke="#f4f4f5" strokeWidth="1.5" style={{ filter: 'drop-shadow(0 0 10px var(--neon-yellow))' }} />
-
-                  {/* Pressure generator core */}
-                  <rect x="235" y="210" width="30" height="35" rx="3" fill="#064e3b" stroke="var(--neon-green)" strokeWidth="1.5" />
-                  <circle cx="250" cy="227" r="6" fill="var(--neon-green)" style={{ filter: 'drop-shadow(0 0 8px var(--neon-green))' }} />
-
-                  {/* Cyber Legs */}
-                  <path d="M 160,230 L 140,280 L 175,285" fill="#3f3f46" strokeWidth="2" />
-                  <path d="M 340,230 L 360,280 L 325,285" fill="#3f3f46" strokeWidth="2" />
-                </g>
-              </svg>
+              <div style={styles.quotesContainer}>
+                <div style={styles.repQuote}>"Adelanta hasta en curva" <span style={styles.quoteAuthor}>- Fama en autopista</span></div>
+                <div style={styles.repQuote}>"El Come Pendientes" <span style={styles.quoteAuthor}>- Apodo en taller</span></div>
+              </div>
             </div>
 
           </div>
@@ -218,9 +226,9 @@ const UnderTheHood = () => {
         <div style={styles.controllerCard} className="metal-panel">
           <div style={styles.cardHeader}>
             <span style={styles.cardLabel}>PANEL DE CONTROL METÁLICO</span>
-            <h3 style={styles.cardTitle}>ETAPAS DE INGENIERÍA</h3>
+            <h3 style={styles.cardTitle}>ARCHIVO SINDICAL CONFIDENCIAL</h3>
             <p style={styles.cardDesc}>
-              Acciona la palanca de cambios del microbus para desplazar los renders de desarrollo. Siente la compresión neumática en cada slot.
+              Acciona la palanca de cambios del microbus para revisar el historial y estado técnico del Microtron.
             </p>
           </div>
 
@@ -256,8 +264,8 @@ const UnderTheHood = () => {
                       }}
                     >
                       <span style={{ fontFamily: 'var(--font-hud)', fontSize: '10px' }}>{notch}ª</span>
-                      <span style={{ fontFamily: 'var(--font-mecha)', fontSize: '8px', marginTop: '1px' }}>
-                        {notch === 1 ? 'BOCETO' : notch === 2 ? 'WIRE' : notch === 3 ? 'METAL' : 'RENDER'}
+                      <span style={{ fontFamily: 'var(--font-mecha)', fontSize: '7px', marginTop: '1px' }}>
+                        {notch === 1 ? 'HOLOGRAMA' : notch === 2 ? 'PERFIL' : notch === 3 ? 'CHASIS' : 'FAMA'}
                       </span>
                     </button>
                   );
@@ -318,13 +326,12 @@ const styles = {
   },
   monitorContainer: {
     width: '100%',
-    height: '420px',
+    height: '520px',
     border: '3px solid var(--border-metal)',
     borderRadius: '8px',
     overflow: 'hidden',
     position: 'relative',
     background: '#020306',
-    transition: 'border-color 0.45s ease',
   },
   monitorBezel: {
     height: '14px',
@@ -368,21 +375,6 @@ const styles = {
     bottom: 0,
     padding: '12px 16px',
     pointerEvents: 'none',
-    zIndex: 7,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-  hudHeader: {
-    display: 'flex',
-    fontFamily: 'var(--font-hud)',
-    fontSize: '9px',
-    letterSpacing: '1px',
-    textShadow: '0 0 3px rgba(0,0,0,0.8)',
-    color: 'var(--text-primary)',
-  },
-  hudFooter: {
-    display: 'flex',
     justifyContent: 'space-between',
     fontFamily: 'var(--font-hud)',
     fontSize: '9px',
@@ -400,18 +392,6 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    transition: 'opacity 0.4s ease-in-out',
-  },
-  paperGrid: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundImage: 'linear-gradient(var(--border-metal) 1px, transparent 0), linear-gradient(90deg, var(--border-metal) 1px, transparent 0)',
-    backgroundSize: '15px 15px',
-    pointerEvents: 'none',
-    opacity: 0.15,
   },
   stageTitlePaper: {
     position: 'absolute',
@@ -604,6 +584,144 @@ const styles = {
     cursor: 'grab',
     marginTop: '-85px',
   },
+  dataRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+    padding: '12px 0',
+    borderBottom: '1px solid rgba(255,255,255,0.05)',
+  },
+  dataLabel: {
+    fontFamily: 'var(--font-hud)',
+    fontSize: '11px',
+    color: 'var(--text-secondary)',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  dataValue: {
+    fontFamily: 'var(--font-mecha)',
+    fontSize: '14px',
+    color: 'var(--text-primary)',
+    fontWeight: '800',
+    textAlign: 'right',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  statsGrid: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+    gap: '15px',
+    marginBottom: '25px',
+  },
+  statBox: {
+    flex: 1,
+    background: 'rgba(255,255,255,0.02)',
+    border: '1px solid var(--border-metal)',
+    padding: '15px 10px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    borderRadius: '4px',
+  },
+  statNum: {
+    fontFamily: 'var(--font-mecha)',
+    fontSize: '28px',
+    color: 'var(--neon-blue)',
+    textShadow: '0 0 10px var(--neon-blue-glow)',
+    fontWeight: '800',
+  },
+  statDesc: {
+    fontFamily: 'var(--font-hud)',
+    fontSize: '9px',
+    color: 'var(--text-secondary)',
+    letterSpacing: '1px',
+    textAlign: 'center',
+    marginTop: '5px',
+    textTransform: 'uppercase',
+  },
+  statusList: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+  },
+  statusItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    background: 'rgba(0,0,0,0.3)',
+    padding: '8px 12px',
+    borderRadius: '2px',
+    fontFamily: 'var(--font-hud)',
+    fontSize: '11px',
+    letterSpacing: '1px',
+    borderLeft: '2px solid var(--border-metal)',
+    textTransform: 'uppercase',
+  },
+  repContainer: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    marginBottom: '30px',
+  },
+  repRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '8px 0',
+    borderBottom: '1px dashed rgba(255,0,0,0.2)',
+  },
+  repLabel: {
+    fontFamily: 'var(--font-hud)',
+    fontSize: '11px',
+    color: 'var(--text-secondary)',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  repStars: {
+    color: 'var(--neon-yellow)',
+    fontSize: '18px',
+    letterSpacing: '2px',
+    textShadow: '0 0 8px var(--neon-yellow)',
+  },
+  repValue: {
+    fontFamily: 'var(--font-mecha)',
+    fontSize: '14px',
+    fontWeight: '800',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  repDanger: {
+    fontFamily: 'var(--font-mecha)',
+    fontSize: '14px',
+    color: 'var(--neon-red)',
+    fontWeight: '800',
+    textShadow: '0 0 10px var(--neon-red-glow)',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  quotesContainer: {
+    width: '100%',
+    borderLeft: '3px solid var(--neon-chicha)',
+    paddingLeft: '15px',
+  },
+  repQuote: {
+    fontFamily: 'var(--font-mecha)',
+    fontSize: '13px',
+    fontStyle: 'italic',
+    color: 'var(--text-primary)',
+    marginBottom: '10px',
+    letterSpacing: '0.5px',
+  },
+  quoteAuthor: {
+    fontFamily: 'var(--font-hud)',
+    fontSize: '9px',
+    color: 'var(--text-secondary)',
+    fontStyle: 'normal',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+  }
 };
 
 export default UnderTheHood;

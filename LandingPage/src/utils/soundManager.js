@@ -102,7 +102,6 @@ class SoundManager {
 
   // Synthesize neon flicker buzz
   playNeonFlicker() {
-    this.init();
     if (this.isMuted || !this.ctx) return;
 
     const now = this.ctx.currentTime;

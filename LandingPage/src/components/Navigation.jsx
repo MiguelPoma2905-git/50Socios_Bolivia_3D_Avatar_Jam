@@ -6,7 +6,7 @@ const Navigation = ({ activeSection }) => {
     { id: 'historia', title: 'HISTORIA', routes: 'TALLER - EL ALTO - COTAHUMA', color: 'var(--neon-blue)' },
     { id: 'proceso', title: 'BAJO EL CAPÓ', routes: 'SOPOCACHI - PRADO - MIRAFLORES', color: 'var(--neon-chicha)' },
     { id: 'galeria', title: 'GARAJE MECHA', routes: 'GARAJE - SAN PEDRO - ACHUMANI', color: 'var(--neon-red)' },
-    { id: 'roadmap', title: 'HOJA DE RUTA', routes: 'CONTROL - PEAJE - V. FÁTIMA', color: 'var(--neon-yellow)' },
+    { id: 'speaker', title: 'RADIO SINDICAL', routes: 'SINTONIZANDO - FM - 88.5', color: 'var(--neon-yellow)' },
   ];
 
   const handleScroll = (id) => {
@@ -58,14 +58,6 @@ const Navigation = ({ activeSection }) => {
                     textShadow: isActive ? `0 0 8px ${item.color}` : 'none' 
                   }}>
                     {item.title}
-                  </span>
-                  
-                  {/* Sub-destinations like real microbuses */}
-                  <span style={{ 
-                    ...styles.placardRoutes,
-                    color: isActive ? '#e4e4e7' : '#71717a'
-                  }}>
-                    {item.routes}
                   </span>
                 </div>
                 
