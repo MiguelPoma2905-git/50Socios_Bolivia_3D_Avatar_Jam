@@ -10,10 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+<<<<<<< HEAD
     "react-pageflip": "^2.0.3",
     "react-youtube": "^10.1.0"
+=======
+    "three": "^0.184.0"
+>>>>>>> ebf4036c1b443654c6c0c5cc1973862e17d6786b
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

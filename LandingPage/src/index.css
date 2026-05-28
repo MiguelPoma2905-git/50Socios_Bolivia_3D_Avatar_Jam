@@ -16,6 +16,8 @@
   --neon-yellow-glow: rgba(255, 234, 0, 0.4);
   --neon-chicha: #ff00ff;
   --neon-chicha-glow: rgba(255, 0, 255, 0.4);
+  --neon-purple: #a855f7;
+  --neon-purple-glow: rgba(168, 85, 247, 0.4);
   
   --text-primary: #e2e8f0;
   --text-secondary: #94a3b8;
@@ -49,6 +51,8 @@
   --neon-yellow-glow: rgba(244, 180, 0, 0.3);
   --neon-chicha: #C46A2D; /* Andean copper/rust orange */
   --neon-chicha-glow: rgba(196, 106, 45, 0.3);
+  --neon-purple: #7c3aed;
+  --neon-purple-glow: rgba(124, 58, 237, 0.3);
   
   --text-primary: #1c1917; /* Dark stone charcoal */
   --text-secondary: #44403c; /* Muted dust gray */

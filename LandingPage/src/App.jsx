@@ -5,8 +5,13 @@ import HeroSection from './components/HeroSection';
 import LoreTable from './components/LoreTable';
 import UnderTheHood from './components/UnderTheHood';
 import CharacterGallery from './components/CharacterGallery';
+<<<<<<< HEAD
 
 import CyberSpeaker from './components/CyberSpeaker';
+=======
+import Roadmap from './components/Roadmap';
+import Builder3D from './components/Builder3D';
+>>>>>>> ebf4036c1b443654c6c0c5cc1973862e17d6786b
 import soundManager from './utils/soundManager';
 
 function App() {
@@ -23,7 +28,11 @@ function App() {
   // Track active section on scroll to update the illuminated menu route signs
   useEffect(() => {
     const handleScroll = () => {
+<<<<<<< HEAD
       const sections = ['inicio', 'historia', 'proceso', 'galeria', 'speaker'];
+=======
+      const sections = ['inicio', 'historia', 'proceso', 'galeria', 'roadmap', 'taller3d'];
+>>>>>>> ebf4036c1b443654c6c0c5cc1973862e17d6786b
       const scrollPosition = window.scrollY + window.innerHeight / 3;
 
       for (const sectionId of sections) {
@@ -230,8 +239,13 @@ function App() {
       <LoreTable />
       <UnderTheHood />
       <CharacterGallery />
+<<<<<<< HEAD
       {/* <Roadmap /> */}
       <CyberSpeaker />
+=======
+      <Roadmap />
+      <Builder3D />
+>>>>>>> ebf4036c1b443654c6c0c5cc1973862e17d6786b
 
       {/* CLANDESTINE FOOTER */}
       <footer style={styles.footer}>
