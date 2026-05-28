@@ -97,11 +97,28 @@ const bocetoImages = {
   huevito: '/imgs/bocetohuevito.jpeg'
 };
 
+const wireImages = {
+  katari: '/imgs/wirepuma.jpeg',
+  micro: '/imgs/wiremicro.jpeg',
+  dorado: '/imgs/wiredoradee.jpeg',
+  minibu: '/imgs/wiremini.jpeg',
+  huevito: '/imgs/wirehuevito.jpeg'
+};
+
+const texturaImages = {
+  katari: '/imgs/texturapuma.jpeg',
+  micro: '/imgs/texturamicro.jpeg',
+  dorado: '/imgs/texturadoradee.jpeg',
+  minibu: '/imgs/texturamini.jpeg',
+  huevito: '/imgs/texturahuevi.jpeg'
+};
+
 const CharacterGallery = () => {
   const [activeChar, setActiveChar] = useState(charactersData[0]);
   const [activePhase, setActivePhase] = useState(4); // 1: Boceto, 2: Wireframe, 3: Textura, 4: Render Final
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
+  const [imageError, setImageError] = useState(false);
 
   // Trigger laser scanner sweep when isScanning is active
   useEffect(() => {
@@ -129,6 +146,7 @@ const CharacterGallery = () => {
     setActiveChar(char);
     setIsScanning(true);
     setScanProgress(0);
+    setImageError(false); // Reset error state
     soundManager.playSliderTick(activePhase);
     soundManager.playRadioStatic(0.2);
   };
@@ -140,6 +158,7 @@ const CharacterGallery = () => {
     setActivePhase(phase);
     setIsScanning(true);
     setScanProgress(0);
+    setImageError(false); // Reset error state
     soundManager.playRadioStatic(0.2);
   };
 
@@ -807,13 +826,20 @@ const CharacterGallery = () => {
               </div>
             </div>
 
-            {/* Render Sketch Image if Phase 1, otherwise render Procedural SVG */}
+            {/* Render Image for Phase 1 (Boceto), Phase 2 (Wireframe), Phase 3 (Textura) if available, otherwise fallback to Procedural SVG */}
             <div style={styles.svgDisplay}>
-              {activePhase === 1 ? (
+              {((activePhase === 1 && bocetoImages[activeChar.id]) ||
+                (activePhase === 2 && wireImages[activeChar.id]) ||
+                (activePhase === 3 && texturaImages[activeChar.id])) && !imageError ? (
                 <img 
-                  src={bocetoImages[activeChar.id]} 
-                  alt={`Boceto de ${activeChar.name}`} 
+                  src={
+                    activePhase === 1 ? bocetoImages[activeChar.id] :
+                    activePhase === 2 ? wireImages[activeChar.id] :
+                    texturaImages[activeChar.id]
+                  } 
+                  alt={`${activePhase === 1 ? 'Boceto' : activePhase === 2 ? 'Wireframe' : 'Textura'} de ${activeChar.name}`} 
                   style={styles.bocetoImage} 
+                  onError={() => setImageError(true)}
                 />
               ) : (
                 renderMechaSvg()

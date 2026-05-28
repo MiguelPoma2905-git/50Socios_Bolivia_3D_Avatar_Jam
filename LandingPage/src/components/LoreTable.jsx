@@ -19,15 +19,20 @@ const comicImages = {
     panel1: '',
     panel2: '',
     panel3: ''
+  },
+  page4: {
+    panel1: '',
+    panel2: '',
+    panel3: ''
   }
 };
 
 // RUTA DE IMÁGENES PARA EL TELEVISOR CRT RETRO
 // Agrega rutas aquí para sobreescribir los marcadores vectoriales (ej. '/imgs/tv_cam4.png')
 const tvImages = {
-  channel4: '',
-  channel7: '',
-  channel13: ''
+  channel4: '/imgs/tv.png',
+  channel7: '/imgs/tv2.jfif',
+  channel13: '/imgs/tv3.jpeg'
 };
 
 // Dibujos vectoriales de marcador de posición para los paneles del cómic
@@ -105,6 +110,29 @@ const drawSquelchRipple = () => (
     <circle cx="60" cy="40" r="15" fill="none" stroke="var(--neon-green)" strokeWidth="1.5" />
     <circle cx="60" cy="40" r="28" fill="none" stroke="var(--neon-green)" strokeWidth="0.8" strokeDasharray="3 3" />
     <text x="60" y="44" fill="var(--neon-green)" fontSize="6" fontFamily="var(--font-hud)" textAnchor="middle">RAYO VOCEADOR</text>
+  </svg>
+);
+
+const drawRadioTower = () => (
+  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
+    <rect x="0" y="0" width="120" height="80" fill="#1c1917" />
+    <line x1="60" y1="70" x2="60" y2="20" stroke="var(--neon-yellow)" strokeWidth="1.5" />
+    <line x1="50" y1="70" x2="60" y2="40" stroke="var(--neon-yellow)" strokeWidth="0.8" />
+    <line x1="70" y1="70" x2="60" y2="40" stroke="var(--neon-yellow)" strokeWidth="0.8" />
+    <circle cx="60" cy="20" r="3.5" fill="var(--neon-red)" style={{ filter: 'drop-shadow(0 0 4px var(--neon-red))' }} />
+    <path d="M 52,15 Q 60,7 68,15" fill="none" stroke="var(--neon-yellow)" strokeWidth="0.8" strokeDasharray="2 2" />
+    <path d="M 44,10 Q 60,-2 76,10" fill="none" stroke="var(--neon-yellow)" strokeWidth="0.5" strokeDasharray="3 3" />
+    <text x="60" y="75" fill="var(--neon-yellow)" fontSize="5.5" fontFamily="var(--font-hud)" textAnchor="middle">SEÑAL DE ALINEACIÓN</text>
+  </svg>
+);
+
+const drawMicrobusCaravan = () => (
+  <svg viewBox="0 0 120 80" style={{ width: '100%', height: '100%', display: 'block' }}>
+    <rect x="0" y="0" width="120" height="80" fill="#1c1917" />
+    <path d="M 10,65 Q 40,65 50,45 Q 60,25 90,25" fill="none" stroke="#4b5563" strokeWidth="6" />
+    <rect x="25" y="52" width="12" height="8" rx="2" fill="var(--neon-green)" />
+    <rect x="65" y="16" width="12" height="8" rx="2" fill="var(--neon-chicha)" />
+    <text x="60" y="74" fill="var(--neon-green)" fontSize="6" fontFamily="var(--font-hud)" textAnchor="middle">CARAVANA INICIADA</text>
   </svg>
 );
 
@@ -299,7 +327,8 @@ const LoreTable = () => {
   const handleTvChannelChange = (channel) => {
     if (!tvPowered) return;
     soundManager.playTapeClick();
-    soundManager.playRadioStatic(0.35);
+    soundManager.playRadioStatic(0.4);
+    soundManager.playRadioVoiceNoise(1.5);
     setTvChannel(channel);
   };
 
@@ -308,6 +337,7 @@ const LoreTable = () => {
     const nextPower = !tvPowered;
     if (nextPower) {
       soundManager.playRadioStatic(0.5);
+      soundManager.playRadioVoiceNoise(1.8);
     }
     setTvPowered(nextPower);
   };
@@ -317,7 +347,7 @@ const LoreTable = () => {
     soundManager.playPaperRustle();
 
     const nextPage = direction === 'next'
-      ? Math.min(comicPage + 1, 2)
+      ? Math.min(comicPage + 1, 4)
       : Math.max(comicPage - 1, 0);
 
     if (nextPage === comicPage) return; // No change needed
@@ -367,6 +397,38 @@ const LoreTable = () => {
     switch (p) {
       case 0:
         return (
+          <div style={{
+            ...styles.comicLeftPage,
+            background: 'linear-gradient(90deg, #1c1917 0%, #2e2a24 100%)',
+            borderRight: '4px solid #111'
+          }}>
+            <div style={{ ...styles.comicPageHeader, color: 'var(--neon-yellow)' }}>SINDICATO DE MICROS REBELDES</div>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              gap: '16px',
+              fontFamily: 'var(--font-hud)',
+              color: 'var(--text-secondary)',
+              textAlign: 'center',
+              padding: '20px'
+            }}>
+              <div className="warning-stripes" style={{ height: '8px', width: '100%' }} />
+              <h4 style={{ fontFamily: 'var(--font-mecha)', fontSize: '15px', color: '#ffffff', margin: 0 }}>REGISTRO DE OPERACIONES</h4>
+              <p style={{ fontSize: '9px', lineHeight: '1.4', color: 'var(--text-secondary)' }}>
+                "Este cuaderno de ruta detalla la reactivación andina de motores Cummins y el conflicto vial contra PrimeKatari."
+              </p>
+              <div style={{ border: '1.5px dashed var(--neon-red)', padding: '6px 12px', fontSize: '8px', color: 'var(--neon-red)', fontWeight: 'bold' }}>
+                CLASIFICACIÓN: ALTAMENTE SECTORIAL
+              </div>
+              <div className="warning-stripes" style={{ height: '8px', width: '100%' }} />
+            </div>
+          </div>
+        );
+      case 1:
+        return (
           <div style={styles.comicLeftPage}>
             <div style={styles.comicPageHeader}>PÁGINA 1 — EL HALLAZGO EN EL TALLER</div>
             <div style={styles.comicPanel}>
@@ -391,7 +453,7 @@ const LoreTable = () => {
             </div>
           </div>
         );
-      case 1:
+      case 2:
         return (
           <div style={styles.comicLeftPage}>
             <div style={styles.comicPageHeader}>PÁGINA 3 — EL CERCO MUNICIPAL</div>
@@ -417,7 +479,7 @@ const LoreTable = () => {
             </div>
           </div>
         );
-      case 2:
+      case 3:
         return (
           <div style={styles.comicLeftPage}>
             <div style={styles.comicPageHeader}>PÁGINA 5 — CHOQUE EN LA AUTOPISTA</div>
@@ -443,6 +505,32 @@ const LoreTable = () => {
             </div>
           </div>
         );
+      case 4:
+        return (
+          <div style={styles.comicLeftPage}>
+            <div style={styles.comicPageHeader}>PÁGINA 7 — CONEXIÓN CRÍPTICA</div>
+            <div style={styles.comicPanel}>
+              <div style={styles.comicPanelMedia}>
+                {renderComicPanelMedia(comicImages.page4.panel1, 'Transmisor de radio', drawRadioTower)}
+                <div style={styles.comicOnomatopeya} className="neon-text-yellow">¡FIUUUU!</div>
+              </div>
+              <div style={styles.panelCaption}>
+                Don Severo activa la radio transceptora, enviando un pulso encriptado a cada hangar y garaje de la urbe.
+              </div>
+            </div>
+            <div style={styles.comicPanel}>
+              <div style={styles.comicPanelMedia}>
+                {renderComicPanelMedia(comicImages.page4.panel2, 'El pulso de radio', drawEnergyZap)}
+                <div style={styles.speechBubbleLeft}>
+                  "¡Atención a todos los colectivos! Es hora de iniciar la caravana de resistencia."
+                </div>
+              </div>
+              <div style={styles.panelCaption}>
+                La señal sintoniza simultáneamente los tableros de cada Utaformer paceño. La red está lista.
+              </div>
+            </div>
+          </div>
+        );
       default:
         return null;
     }
@@ -451,6 +539,74 @@ const LoreTable = () => {
   const renderRightPage = (p) => {
     switch (p) {
       case 0:
+        return (
+          <div style={{
+            ...styles.comicRightPage,
+            background: 'linear-gradient(135deg, #7c2d12 0%, #451a03 100%)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderLeft: '4px solid #111',
+            padding: '24px'
+          }}>
+            {/* Closed binder artwork layout */}
+            <div style={{
+              border: '3px solid #111',
+              borderRadius: '8px',
+              padding: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
+              background: 'rgba(5, 6, 10, 0.4)',
+              boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)'
+            }}>
+              <span style={{ fontFamily: 'var(--font-hud)', color: 'var(--neon-yellow)', fontSize: '9px', letterSpacing: '2px', fontWeight: 'bold' }}>
+                UTAFORMERS PACEÑOS
+              </span>
+
+              {/* Giant distressed red title stamp */}
+              <div style={{
+                border: '3.5px double var(--neon-red)',
+                borderRadius: '6px',
+                padding: '10px 14px',
+                margin: '25px 0',
+                transform: 'rotate(-4deg)',
+                textAlign: 'center',
+                boxShadow: '0 0 10px rgba(239, 68, 68, 0.15)'
+              }}>
+                <h3 style={{ fontFamily: 'var(--font-mecha)', fontSize: '20px', color: '#ef4444', margin: 0, fontWeight: '900', letterSpacing: '1px' }}>
+                  EL MISTERIO
+                </h3>
+                <h4 style={{ fontFamily: 'var(--font-mecha)', fontSize: '13px', color: '#ef4444', margin: '4px 0 0 0', fontWeight: '800' }}>
+                  DEL DIÉSEL PACEÑO
+                </h4>
+              </div>
+
+              {/* Pulsing button to open book */}
+              <button 
+                onClick={() => handleComicPageChange('next')}
+                style={{
+                  ...styles.comicNavBtn,
+                  background: 'var(--neon-green)',
+                  color: '#000000',
+                  boxShadow: '0 0 15px var(--neon-green-glow)',
+                  borderColor: 'var(--neon-green)',
+                  animation: 'neon-pulse-green 1.2s infinite alternate',
+                  fontSize: '11px',
+                  fontWeight: '900',
+                  cursor: 'pointer'
+                }}
+              >
+                ABRIR BITÁCORA [ ↵ ]
+              </button>
+            </div>
+          </div>
+        );
+      case 1:
         return (
           <div style={styles.comicRightPage}>
             <div style={styles.comicPageHeader}>PÁGINA 2 — LA CHISPA DEL ALTIPLANO</div>
@@ -467,7 +623,7 @@ const LoreTable = () => {
             </div>
           </div>
         );
-      case 1:
+      case 2:
         return (
           <div style={styles.comicRightPage}>
             <div style={styles.comicPageHeader}>PÁGINA 4 — CONSPIRACIÓN EN EL HANGAR</div>
@@ -484,7 +640,7 @@ const LoreTable = () => {
             </div>
           </div>
         );
-      case 2:
+      case 3:
         return (
           <div style={styles.comicRightPage}>
             <div style={styles.comicPageHeader}>PÁGINA 6 — EL DESTINO PACEÑO</div>
@@ -503,6 +659,23 @@ const LoreTable = () => {
               </div>
               <div style={styles.panelCaption}>
                 Con el Illimani de testigo, el microbús renace como guardián de las laderas. Continuará...
+              </div>
+            </div>
+          </div>
+        );
+      case 4:
+        return (
+          <div style={styles.comicRightPage}>
+            <div style={styles.comicPageHeader}>PÁGINA 8 — LA GRAN CARAVANA REBELDE</div>
+            <div style={{ ...styles.comicPanel, minHeight: '220px' }}>
+              <div style={styles.comicPanelMedia}>
+                {renderComicPanelMedia(comicImages.page4.panel3, 'Caravana de mechas', drawMicrobusCaravan)}
+                <div style={styles.speechBubbleRight}>
+                  "¡Rumbo a la Pérez! Ningún bloqueo municipal nos detendrá."
+                </div>
+              </div>
+              <div style={styles.panelCaption}>
+                Bajo la noche paceña, los motores Cummins y Coasters rugen al unísono, descendiendo en una caravana unificada de mechas. ¡La batalla final de Utaformers está por comenzar!
               </div>
             </div>
           </div>
@@ -1036,16 +1209,20 @@ const LoreTable = () => {
                       }}>
                         {/* Channel 4: Tele-Sindicato */}
                         {tvChannel === 4 && (
-                          <div style={styles.tvChannelLayout}>
-                            <div style={styles.tvChannelHeader}>
-                              <span style={{ color: 'var(--neon-green)' }}>[CÁM 04 - SOPOCACHI REBELDE]</span>
-                              <span>DIAGNÓSTICO AL HANGAR</span>
+                          tvImages.channel4 ? (
+                            <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000' }}>
+                              <img src={tvImages.channel4} alt="Canal 4 Hangar" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+                              <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'rgba(0,0,0,0.7)', padding: '4px 8px', borderRadius: '4px', fontSize: '9px', color: 'var(--neon-green)', fontFamily: 'var(--font-hud)', zIndex: 12 }}>
+                                [CÁM 04 - SOPOCACHI REBELDE]
+                              </div>
                             </div>
-                            <div style={styles.tvChannelMain}>
-                              {tvImages.channel4 ? (
-                                <img src={tvImages.channel4} alt="Canal 4 Hangar" style={styles.tvChannelImage} />
-                              ) : (
-                                /* Bouncing Dodge Microbus inside TV */
+                          ) : (
+                            <div style={styles.tvChannelLayout}>
+                              <div style={styles.tvChannelHeader}>
+                                <span style={{ color: 'var(--neon-green)' }}>[CÁM 04 - SOPOCACHI REBELDE]</span>
+                                <span>DIAGNÓSTICO AL HANGAR</span>
+                              </div>
+                              <div style={styles.tvChannelMain}>
                                 <div style={styles.bouncingBusWrapper}>
                                   <svg viewBox="0 0 100 50" style={{ width: '120px', height: 'auto', animation: 'microbus-rattle 0.08s infinite alternate' }}>
                                     <path d="M 10,35 Q 50,15 90,35 L 85,45 L 15,45 Z" fill="var(--neon-green)" stroke="#ffffff" strokeWidth="1" />
@@ -1054,25 +1231,30 @@ const LoreTable = () => {
                                     <rect x="35" y="25" width="30" height="10" fill="#000" />
                                   </svg>
                                 </div>
-                              )}
-                              <pre style={styles.tvTickerText}>
-                                {`--- TELEMETRÍA EN VIVO ---\n- Estado motor: ACTIVO [Neón Chicha]\n- Fuga combustible: 2% (tolerable)\n- Pasajeros a bordo: 24 (capacidad 12)\n- Nivel chicha en radiador: 92%`}
-                              </pre>
+                                <pre style={styles.tvTickerText}>
+                                  {`--- TELEMETRÍA EN VIVO ---\n- Estado motor: ACTIVO [Neón Chicha]\n- Fuga combustible: 2% (tolerable)\n- Pasajeros a bordo: 24 (capacidad 12)\n- Nivel chicha en radiador: 92%`}
+                                </pre>
+                              </div>
                             </div>
-                          </div>
+                          )
                         )}
 
                         {/* Channel 7: Canal Municipal */}
                         {tvChannel === 7 && (
-                          <div style={styles.tvChannelLayout}>
-                            <div style={styles.tvChannelHeader}>
-                              <span style={{ color: 'var(--neon-blue)' }}>[CANAL 07 - ALTI-SYSTEMS CENTRAL]</span>
-                              <span>MENSAJE OFICIAL EDIL</span>
+                          tvImages.channel7 ? (
+                            <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000' }}>
+                              <img src={tvImages.channel7} alt="Canal 7 Oficial" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+                              <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'rgba(0,0,0,0.7)', padding: '4px 8px', borderRadius: '4px', fontSize: '9px', color: 'var(--neon-blue)', fontFamily: 'var(--font-hud)', zIndex: 12 }}>
+                                [CANAL 07 - ALTI-SYSTEMS CENTRAL]
+                              </div>
                             </div>
-                            <div style={styles.tvChannelMain}>
-                              {tvImages.channel7 ? (
-                                <img src={tvImages.channel7} alt="Canal 7 Oficial" style={styles.tvChannelImage} />
-                              ) : (
+                          ) : (
+                            <div style={styles.tvChannelLayout}>
+                              <div style={styles.tvChannelHeader}>
+                                <span style={{ color: 'var(--neon-blue)' }}>[CANAL 07 - ALTI-SYSTEMS CENTRAL]</span>
+                                <span>MENSAJE OFICIAL EDIL</span>
+                              </div>
+                              <div style={styles.tvChannelMain}>
                                 <div style={styles.spinningRadarWrapper}>
                                   <svg viewBox="0 0 100 100" style={styles.radarSvg}>
                                     <circle cx="50" cy="50" r="45" fill="none" stroke="var(--neon-blue)" strokeWidth="1" />
@@ -1083,36 +1265,41 @@ const LoreTable = () => {
                                     <circle cx="70" cy="35" r="4" fill="var(--neon-red)" style={{ animation: 'neon-flicker 1s infinite' }} />
                                   </svg>
                                 </div>
-                              )}
-                              <pre style={{...styles.tvTickerText, color: 'var(--neon-blue)'}}>
-                                {`--- ALERTA VIAL MUNICIPAL ---\n¡Peligro! Detectados disturbios sónicos en la subida a la Ceja. Choferes tradicionales usan bocinas prohibidas de 120 decibelios. PrimeKatari ha sido desplegado para restablecer el orden absoluto.`}
-                              </pre>
+                                <pre style={{...styles.tvTickerText, color: 'var(--neon-blue)'}}>
+                                  {`--- ALERTA VIAL MUNICIPAL ---\n¡Peligro! Detectados disturbios sónicos en la subida a la Ceja. Choferes tradicionales usan bocinas prohibidas de 120 decibelios. PrimeKatari ha sido desplegado para restablecer el orden absoluto.`}
+                                </pre>
+                              </div>
                             </div>
-                          </div>
+                          )
                         )}
 
                         {/* Channel 13: Chicha Vision */}
                         {tvChannel === 13 && (
-                          <div style={styles.tvChannelLayout}>
-                            <div style={styles.tvChannelHeader}>
-                              <span style={{ color: 'var(--neon-chicha)' }}>[CANAL 13 - CHICHA VISION TV]</span>
-                              <span>PUBLICIDAD RETRO VINTAGE</span>
+                          tvImages.channel13 ? (
+                            <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000' }}>
+                              <img src={tvImages.channel13} alt="Canal 13 Publicidad" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+                              <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'rgba(0,0,0,0.7)', padding: '4px 8px', borderRadius: '4px', fontSize: '9px', color: 'var(--neon-chicha)', fontFamily: 'var(--font-hud)', zIndex: 12 }}>
+                                [CANAL 13 - CHICHA VISION TV]
+                              </div>
                             </div>
-                            <div style={styles.tvChannelMain}>
-                              {tvImages.channel13 ? (
-                                <img src={tvImages.channel13} alt="Canal 13 Publicidad" style={styles.tvChannelImage} />
-                              ) : (
+                          ) : (
+                            <div style={styles.tvChannelLayout}>
+                              <div style={styles.tvChannelHeader}>
+                                <span style={{ color: 'var(--neon-chicha)' }}>[CANAL 13 - CHICHA VISION TV]</span>
+                                <span>PUBLICIDAD RETRO VINTAGE</span>
+                              </div>
+                              <div style={styles.tvChannelMain}>
                                 <div style={styles.adBanner}>
                                   <span className="warning-stripes" style={styles.chichaAdBanner}>¡COMPRA RECONSTITUYENTE!</span>
                                   <h4 style={{ color: 'var(--neon-yellow)', margin: '4px 0', fontSize: '12px', fontFamily: 'var(--font-mecha)' }}>Mocochinchi Extremo</h4>
                                   <p style={{ fontSize: '8px', color: '#f4f4f5', margin: 0 }}>"¡Para combatir la altura en tu mecha!"</p>
                                 </div>
-                              )}
-                              <pre style={{...styles.tvTickerText, color: 'var(--neon-chicha)'}}>
-                                {`--- SINDICATO INFORMA ---\nSe convoca a todos los afiliados a la parrillada bailable en el hangar de Cotahuma este sábado. Traer su propio líquido refrigerante (singani).`}
-                              </pre>
+                                <pre style={{...styles.tvTickerText, color: 'var(--neon-chicha)'}}>
+                                  {`--- SINDICATO INFORMA ---\nSe convoca a todos los afiliados a la parrillada bailable en el hangar de Cotahuma este sábado. Traer su propio líquido refrigerante (singani).`}
+                                </pre>
+                              </div>
                             </div>
-                          </div>
+                          )
                         )}
                       </div>
                     )}
@@ -1240,23 +1427,29 @@ const LoreTable = () => {
                   cursor: comicPage === 0 ? 'default' : 'pointer'
                 }}
               >
-                PÁG ANTERIOR
+                PORTADA / ATRÁS
               </button>
               
               <span style={styles.comicPageIndicator}>
-                PÁGINA {comicPage * 2 + 1} - {comicPage * 2 + 2} DE 6
+                {comicPage === 0 
+                  ? 'PORTADA — BITÁCORA CONFIDENCIAL' 
+                  : `PÁGINA ${comicPage * 2 - 1} - ${comicPage * 2} DE 8`}
               </span>
 
               <button 
                 onClick={() => handleComicPageChange('next')} 
-                disabled={comicPage === 2}
+                disabled={comicPage === 4}
                 style={{
                   ...styles.comicNavBtn,
-                  opacity: comicPage === 2 ? 0.4 : 1,
-                  cursor: comicPage === 2 ? 'default' : 'pointer'
+                  opacity: comicPage === 4 ? 0.4 : 1,
+                  cursor: comicPage === 4 ? 'default' : 'pointer',
+                  background: comicPage === 0 ? 'var(--neon-green)' : '#7c2d12',
+                  borderColor: comicPage === 0 ? 'var(--neon-green)' : '#290f02',
+                  color: comicPage === 0 ? '#000000' : '#ebdcb9',
+                  boxShadow: comicPage === 0 ? '0 0 10px var(--neon-green-glow)' : 'none'
                 }}
               >
-                PÁG SIGUIENTE
+                {comicPage === 0 ? 'ABRIR BITÁCORA' : 'PÁG SIGUIENTE'}
               </button>
             </div>
           </div>
@@ -1836,7 +2029,6 @@ const styles = {
   screenActiveContent: {
     width: '100%',
     height: '100%',
-    padding: '12px',
     color: 'var(--neon-green)',
     fontFamily: 'var(--font-hud)',
     display: 'flex',
@@ -1849,6 +2041,8 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'space-between',
     height: '100%',
+    padding: '12px',
+    boxSizing: 'border-box'
   },
   tvChannelHeader: {
     display: 'flex',
